@@ -66,6 +66,8 @@ function renderChat() {
 			divs = [...document.querySelectorAll(".messages > *")];
 
 			if(divs.length > 0 && divs[divs.length - 1].getAttribute("data-user") === message.author.id) {
+				// Instead of doing the name & profile picture again,
+				// add another paragraph.
 				let p = document.createElement("p");
 				let msg = toBodyText(message.content, message);
 				p.innerHTML = msg[0];
@@ -107,17 +109,9 @@ function renderChat() {
 
 function toBodyText(str, message) {
 	let suffix = "";
-	str = str.replace(/</g, "&lt;").replace(/\n/g, "<br>").split(" ");
-
-
-	for(let i = 0; i < str.length; i++) {
-		// URL match
-		if(str[i].match(/https?:\/\//)) {
-			str[i] = `<a target="_blank" href="${str[i]}" class="link doEmbed">${str[i]}</a>`;
-		}
-	}
-
-	str = str.join(" ");
+	str = str.replace(/</g, "&lt;").replace(/\n/g, "<br>");
+	// Match & replace URLs
+	str = str.replace(/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g, `<a class="link doEmbed" href="$1" target="_blank>$1</a>`)
 
 	let par = message.parameters;
 	for(let key of Object.keys(par)) {
