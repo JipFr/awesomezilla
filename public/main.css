@@ -53,6 +53,16 @@ header .left {
 	font-size: 1.5rem;
 	background: rgba(0, 0, 0, 0.1);
 }
+header .core {
+	padding: 0 20px;
+}
+header .core .title {
+	margin: 0;
+}
+header .core .title .roomHashtag {
+	opacity: .8;
+	margin-left: 20px;
+}
 
 aside {
 	border-right: 1px solid var(--border);
@@ -148,4 +158,22 @@ aside {
 	color: var(--textSecondary);
 	margin-left: 10px;
 	font-weight: 400;
+}
+.message .body p {
+	margin: 0;
+	color: var(--textSecondary);
+	word-break: break-word;
+	margin-top: 5px;
+}
+.message .body .link {
+	color: var(--main);
+	text-decoration: none;
+}
+.message .body .link:hover {
+	text-decoration: underline;
+}
+.message .body .parameter {
+	background: var(--border);
+	border-radius: 100px;
+	padding: 0 10px;
 }

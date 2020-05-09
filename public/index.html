@@ -14,7 +14,7 @@
 			<template class="message">
 				<div class="message">
 					<div class="messageLeft">
-						<img class="authorImg">
+						<img class="authorImg" onerror="this.src = `/img/u-not-found.png`">
 					</div>
 					<div class="messageCore">
 						<h4 class="title"><span class="name">John Doe</span> <span class="time">01:23</span></span></h4>
@@ -28,7 +28,12 @@
 				<div class="left sidebarWidth">
 					
 				</div>
-				<div class="core"></div>
+				<div class="core">
+					<h3 class="title">
+						<span class="roomName"></span>
+						<span class="roomHashtag"></span>
+					</h3>
+				</div>
 			</header>
 			<div class="bodyWrapper mainLayout">
 				<aside class="sidebar sidebarWidth">
@@ -40,7 +45,7 @@
 					<div class="mainChat">
 						<div class="messages"></div>
 						<div class="inputDiv">
-							<input type="text" placeholder="Post in channel">
+							<input type="text" class="messageBox" placeholder="Post in channel">
 						</div>
 					</div>
 				</div>

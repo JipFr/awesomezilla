@@ -13,10 +13,8 @@ app.use(ctx => {
 
 app.post("/getData", async (ctx: Context) => {
 	let query = ctx.req.query;
-	console.log(query);
 	if(query.auth) {
 		let client = await getClient(query.auth.toString());
-
 
 		let messages: Message[] = [];
 		if(query.room) {
@@ -24,18 +22,50 @@ app.post("/getData", async (ctx: Context) => {
 			if(room) {
 				messages = await room.fetchMessages();
 			}
-			console.log(room?.name, room?.token);
 		}
 
 
-		let channels = Object.assign([], client.channels);
+		let channels = [...client.channels.map(obj => Object.assign({}, obj))];
 		channels.forEach((ch: Channel) => {
 			delete ch.client;
+		});
+		messages = [...messages.map(obj => Object.assign({}, obj))];
+		messages.forEach((msg: Message) => {
+			msg.channel = Object.assign({}, msg.channel);
+			delete msg.channel.client;
 		});
 
 		return {
 			channels,
 			messages
+		}
+		return {
+			channels: [],
+			messages: []
+		}
+	} else {
+		return {
+			status: 403
+		}
+	}
+});
+
+app.post("/postMessage", async (ctx: Context) => {
+	let query = ctx.req.query;
+	if(query.auth && query.room) {
+		let client = await getClient(query.auth.toString());
+
+		let messages: Message[] = [];
+		if(query.room) {
+			let room = client.channels.find((room: Channel) => room.token === query.room);
+			if(room && query.v && typeof query.v === "string") {
+				console.log(room);
+				room.send(query.v);
+			}
+		}
+		
+		return {
+			status: 200
 		}
 	} else {
 		return {
