@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Chat</title>
+		<link rel="stylesheet" href="main.css">
+	</head>
+	<body>
+		<div class="templates" style="display: none;">
+			<template class="room">
+				<a class="room">
+					<span class="text">#<span class="channelName">tmp-name</span></span>
+				</a>
+			</template>
+			<template class="message">
+				<div class="message">
+					<div class="messageLeft">
+						<img class="authorImg">
+					</div>
+					<div class="messageCore">
+						<h4 class="title"><span class="name">John Doe</span> <span class="time">01:23</span></span></h4>
+						<div class="body"></div>
+					</div>
+				</div>
+			</template>
+		</div>
+		<div class="all">
+			<header class="mainLayout">
+				<div class="left sidebarWidth">
+					
+				</div>
+				<div class="core"></div>
+			</header>
+			<div class="bodyWrapper mainLayout">
+				<aside class="sidebar sidebarWidth">
+					<div class="rooms">
+
+					</div>
+				</aside>
+				<div class="core">
+					<div class="mainChat">
+						<div class="messages"></div>
+						<div class="inputDiv">
+							<input type="text" placeholder="Post in channel">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="main.js"></script>
+	</body>
+</html>
