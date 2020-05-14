@@ -111,7 +111,7 @@ function toBodyText(str, message) {
 	let suffix = "";
 	str = str.replace(/</g, "&lt;").replace(/\n/g, "<br>");
 	// Match & replace URLs
-	str = str.replace(/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g, `<a class="link doEmbed" href="$1" target="_blank>$1</a>`)
+	str = str.replace(/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g, `<a class="link doEmbed" href="$1" target="_blank">$1</a>`);
 
 	let par = message.parameters;
 	for(let key of Object.keys(par)) {
@@ -140,8 +140,16 @@ async function updateData() {
 	}
 
 	//?room=${roomToken}&auth=${getAuth()}&since=${lastTime}
-	let dataReq = await fetch(`${projectOpts.protocol}://${projectOpts.rootUrl}/getData?room=${roomToken}&auth=${getAuth()}&since=${lastTime}`, {
-		method: "POST"
+	let dataReq = await fetch(`${projectOpts.protocol}://${projectOpts.rootUrl}/getData`, {
+		method: "POST",
+		headers: {
+			"content-type": "application/json"
+		},
+		body: JSON.stringify({
+			room: roomToken,
+			auth: getAuth(),
+			since: lastTime
+		})
 	});
 	data = await dataReq.json();
 }
@@ -156,8 +164,16 @@ async function init() {
 		if(evt.key === "Enter") {
 			let v = evt.currentTarget.value;
 			evt.currentTarget.value = "";
-			fetch(`/postMessage?v=${encodeURIComponent(v)}&room=${roomToken}&auth=${getAuth()}`, {
-				method: "POST"
+			fetch(`/postMessage`, {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({
+					v,
+					room: roomToken,
+					auth: getAuth()
+				})
 			}).then(main);
 		}
 	});

@@ -1,5 +1,5 @@
-import { Application, Router, Context } from "https://deno.land/x/denotrain@v0.3.1/mod.ts";
-import { TrainStatic } from "https://deno.land/x/denotrain@v0.3.1/middleware/static/mod.ts";
+import { Application, Router, Context } from "https://deno.land/x/denotrain@v0.4.0/mod.ts";
+import { TrainStatic } from "https://deno.land/x/denotrain@v0.4.0/middleware/static/mod.ts";
 import { Client, Message, Channel } from "https://deno.land/x/talk_lib/mod.ts"
 import { UserClients } from "./classes.ts";
 
@@ -12,7 +12,7 @@ app.use(ctx => {
 });
 
 app.post("/getData", async (ctx: Context) => {
-	let query = ctx.req.query;
+	let query = ctx.req.body;
 	if(query.auth) {
 		let client = await getClient(query.auth.toString());
 
@@ -51,7 +51,7 @@ app.post("/getData", async (ctx: Context) => {
 });
 
 app.post("/postMessage", async (ctx: Context) => {
-	let query = ctx.req.query;
+	let query = ctx.req.body;
 	if(query.auth && query.room) {
 		let client = await getClient(query.auth.toString());
 
