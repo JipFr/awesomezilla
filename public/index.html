@@ -2,7 +2,11 @@
 <html>
 	<head>
 		<title>Chat</title>
+		<link rel="icon" href="icon.png">
 		<link rel="stylesheet" href="main.css">
+		<link rel="stylesheet" href="/assets/atom-one-light.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
 	</head>
 	<body>
 		<div class="templates" style="display: none;">
@@ -45,7 +49,7 @@
 					<div class="mainChat">
 						<div class="messages"></div>
 						<div class="inputDiv">
-							<input type="text" class="messageBox" placeholder="Post in channel">
+							<textarea type="text" class="messageBox" placeholder="Post in channel"></textarea>
 						</div>
 					</div>
 				</div>
