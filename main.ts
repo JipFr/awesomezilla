@@ -4,6 +4,10 @@ import { Client, Message, Channel } from "https://deno.land/x/talk_lib/mod.ts"
 import { Parser, HtmlRenderer } from "https://cdn.pika.dev/commonmark@0.29.1"
 import { UserClients } from "./classes.ts";
 import { getEmbed } from "./embed.ts";
+import {
+	writeFileStr,
+	writeFileStrSync,
+  } from "https://deno.land/std@0.51.0/fs/mod.ts";
 
 let parser = new Parser();
 let renderer = new HtmlRenderer({ safe: true });
@@ -109,6 +113,25 @@ async function getClient(auth: string) {
 	return userClients[auth];
 }
 
+app.get("/image/:id", async (ctx) => {
+	// TODO make this work lol
+	let avatarReq = await fetch(`https://box.ictmaatwerk.com/avatar/${ctx.params.id}/256`, {
+		headers: {
+			"Ocs-Apirequest": "true",
+			"Accept": "application/json, text/plain, */*",
+			"Authorization": `Basic ${ctx.queryParams.auth}`
+		}
+	});
+	// This will succeed
+	let txt = await avatarReq.text();
+	// console.log(txt);
+
+	// await writeFileStr(`./images/${ctx.params.id}.png`, txt);
+
+	// console.log("Written");
+	return "";
+	// Now what?
+});
 
 await app.start({ port: 8081 });
 console.log("Started!");

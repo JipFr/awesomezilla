@@ -19,8 +19,8 @@
 
 		--body: #191919;
 		--bodyHarsh: var(--body);
-		--offBody: #292929;
-		--headerArrow: #147EFB;
+		--offBody: #181818ce;
+		--headerArrow: white;
 		--headerText: var(--text);
 		--text: white;
 		--textSecondary: lightgray;
@@ -71,6 +71,9 @@ header {
 [data-is-ios="true"] header {
 	background: var(--offBody);
 	color: var(--headerText);
+	-webkit-backdrop-filter: blur(15px);
+	backdrop-filter: blur(15px);
+	--headerArrow: #147EFB;
 }
 [data-is-ios="false"] header {
 	border-top-color: rgba(0, 0, 0, 0.1);
@@ -305,6 +308,7 @@ aside {
 }
 .urlEmbed .embedTitle, .urlEmbed .embedDescription {
 	margin: 0;
+	font-size: .9rem;
 }
 .urlEmbed .embedDescription {
 	color: var(--textSecondary);
