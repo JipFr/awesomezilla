@@ -63,6 +63,7 @@ export async function getEmbed(url: string): Promise<string> {
 				${validImage ? `<div class="imageDiv"><img src="${image}" class="embedImage" onerror="embedError(this);"></div>` : ""}
 				<div class="embedCore">
 					${title ? `<h3 class="embedTitle">${title}</h3>` : ""}
+					${url ? `<a href="${url}" target="_blank" class="embedUrl">${url.length > 100 ? url.slice(0, 100) + "..." : url}</a>` : ""}
 					${description ? `<p class="embedDescription">${description}</p>` : ""}
 				</div>
 			</div>
