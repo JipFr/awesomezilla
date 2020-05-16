@@ -1,9 +1,8 @@
 import { Application, Context } from "https://deno.land/x/abc@v1.0.0-rc3/mod.ts";
-import { cors } from "https://deno.land/x/abc@v1.0.0-rc3/middleware/cors.ts";
-
+import { renderFile } from "https://deno.land/x/dejs/mod.ts";
 import { Client, Message, Channel } from "https://deno.land/x/talk_lib/mod.ts"
-import { UserClients } from "./classes.ts";
 import { Parser, HtmlRenderer } from "https://cdn.pika.dev/commonmark@0.29.1"
+import { UserClients } from "./classes.ts";
 import { getEmbed } from "./embed.ts";
 
 let parser = new Parser();
@@ -18,25 +17,23 @@ let toHTML = (str: string) => {
 const app: Application = new Application();
 const userClients: UserClients = {}
 
+app.renderer = {
+	render<T>(name: string, data: T): Promise<Deno.Reader> {
+		return renderFile(name, data);
+	},
+};
 
-
-// app.use((ctx) => {
-// 	// ctx.res.addHeader("Access-Control-Allow-Origin", "*");
-// 	ctx.response.headers.set("Access-Control-Allow-Origin", "*");
-// 	return {};
-// });
+app.get("/", async (ctx: Context) => {
+	await ctx.render("./public/index.html");
+});
 
 app.get("/getEmbed", async (ctx: Context) => {
-	// let embed = await getEmbed(ctx.req.query.url as string);
-	// ctx.request.
-	ctx.queryParams
-	// return embed;
-	return ctx.queryParams;
+	let embed = await getEmbed(ctx.queryParams.url as string);
+	return embed;
 });
 
 app.post("/getData", async (ctx: Context) => {
 	let query = await ctx.body() as {[key: string]: string};
-	console.log(query);
 	if(query.auth) {
 		let client = await getClient(query.auth.toString());
 
@@ -98,7 +95,7 @@ app.post("/postMessage", async (ctx: Context) => {
 	}
 });
 
-app.static("/", "public", cors());
+app.static("/static", "public");
 
 /** Get Client object based on user's authentication */
 async function getClient(auth: string) {

@@ -1,3 +1,13 @@
+
+/** Get HEAD html from HTML string */
+function getHeadHtml(html: string) {
+	let headHtml;
+	let headStart = html.split(/\<head ?\>/)[1];
+	if(!headStart) console.log(html);
+	if(headStart) headHtml = headStart ? headStart.split("</head>")[0] : null;
+	return headHtml ?? "";	
+}
+
 /** Get HTML embed from URL */
 export async function getEmbed(url: string): Promise<string> {
 
@@ -9,17 +19,19 @@ export async function getEmbed(url: string): Promise<string> {
 	let ct = embedReq.headers.get("content-type")?.split(";")[0];
 
 	let imgurMatch = url.match(/https:\/\/imgur\.com\/(a\/)?(.+)/gi);
-	// Imgur protocol
-	if(imgurMatch) {
-		let imgurId = url.split("/").filter(i => i).pop();
-		let isAlbum = url.includes("/a/");
+	let giphyMatch = url.match(/https:\/\/giphy\.com\/gifs\//gi);
+	if(imgurMatch) { // Imgur embedding
 		return `<iframe src="${url}/embed" scrolling="no" class="embedFrame"></iframe>`
+	} else if(giphyMatch) {
+		let html = await embedReq.text();
+		let headHtml = getHeadHtml(html);
+		
+		let image;
+		if(headHtml) image = getProperty(headHtml, ["apple-touch-icon", "twitter:image:src", "og:image", "icon"]);
+		return `<img src="${image}" class="embed">`
 	} else if(ct === "text/html" || ct === "text/plain") { // HTML pages
 		let html = await embedReq.text();
-		let headHtml;
-		let headStart = html.split("<head>")[1];
-		if(!headStart) console.log(html);
-		headHtml = headStart ? headStart.split("</head>")[0] : null;	
+		let headHtml = getHeadHtml(html);
 
 		let title, description, image;
 		if(headHtml) title = getProperty(headHtml, ["og:title", "twitter:title", "title"]);

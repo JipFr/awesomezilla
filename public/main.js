@@ -241,7 +241,7 @@ function getISO8601(d) {
 
 function updateInputHeight(input = document.querySelector(".inputDiv .messageBox")) {
 	document.body.setAttribute("style", `--inputHeight: 0;`);
-	document.body.setAttribute("style", `--inputHeight: ${input.scrollHeight}px;`);
+	document.body.setAttribute("style", `--inputHeight: ${input.scrollHeight + 2}px;`);
 	window.scrollTo(0, document.body.offsetHeight);
 }
 
