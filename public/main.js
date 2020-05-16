@@ -142,6 +142,11 @@ async function updateEmbeds() {
 	drawEmbeds();
 }
 
+function embedError(imgElement) {
+	imgElement.closest("[data-has-image]").setAttribute("data-has-image", false);
+	imgElement.closest(".imageDiv").remove();
+}
+
 function drawEmbeds() {
 	let shouldScroll = (window.innerHeight + window.scrollY) >= document.body.offsetHeight;
 	// Now actually add the nodes...
@@ -185,7 +190,7 @@ function getMessageNode(message) {
 	node.querySelector(".name").textContent = authorName !== "Unknown factor" ? authorName : "Unknown user";
 	node.querySelector(".time").textContent = `${message.date.getHours().toString().padStart(2, "0")}:${message.date.getMinutes().toString().padStart(2, "0")}`;
 
-	node.querySelector(".authorImg").src = `https://box.ictmaatwerk.com/avatar/${message.author.id}/256`
+	node.querySelector(".authorImg").src = message.fake ? `http://via.placeholder.com/1.png/4c4c4c?text=%20` : `https://box.ictmaatwerk.com/avatar/${message.author.id}/256`
 
 	return node;
 }
@@ -265,6 +270,8 @@ function updateInputHeight(input = document.querySelector(".inputDiv .messageBox
 
 async function init() {
 
+	document.body.setAttribute("data-is-ios", /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
+
 	const ipsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed ddolor sit amet, consetetur sadipscing elitr,";
 
 	for (let i = 0; i < 20; i++) {
@@ -303,14 +310,14 @@ async function init() {
 		}
 	});
 
-	loopMain(true);
+	loopMain(true); // It's init, so I'm passing true
 
 }
 
 function sendMessage() {
 	let input = document.querySelector(".messageBox");
-	let v = input.value;
-	input.value = "";
+	let v = input.innerText;
+	input.innerHTML = "";
 
 	data.messages.push({
 		content: v,
@@ -349,7 +356,7 @@ async function main() {
 	await updateData();
 
 	// Remove all skeleton divs
-	document.querySelectorAll(`[data-skeleton="true"]`).forEach(el => el.remove());
+	document.querySelectorAll(`[data-is-skeleton="true"]`).forEach(el => el.remove());
 	// Sort channels by latest message
 	data.channels = data.channels.sort((a, b) => b.lastMessage.timestamp - a.lastMessage.timestamp);
 

@@ -57,15 +57,20 @@ export async function getEmbed(url: string): Promise<string> {
 			description = description?.slice(0, 200) + "...";
 		}
 
-		return `
-		<div class="embed urlEmbed" data-has-image="${!!image}">
-			${image ? `<div class="imageDiv"><img src="${image}" class="embedImage"></div>` : ""}
-			<div class="embedCore">
-				${title ? `<h3 class="embedTitle">${title}</h3>` : ""}
-				${description ? `<p class="embedDescription">${description}</p>` : ""}
+		let validImage = image && image !== "undefined" && !image.endsWith("undefined");
+		if(validImage || title || description) {
+			return `
+			<div class="embed urlEmbed" data-has-image="${validImage}">
+				${validImage ? `<div class="imageDiv"><img src="${image}" class="embedImage" onerror="embedError(this);"></div>` : ""}
+				<div class="embedCore">
+					${title ? `<h3 class="embedTitle">${title}</h3>` : ""}
+					${description ? `<p class="embedDescription">${description}</p>` : ""}
+				</div>
 			</div>
-		</div>
-		`
+			`
+		} else {
+			return "";
+		}
 	} else if(ct?.startsWith("image/")) { // Images, obviously
 		return `<img src="${url}" class="embed">`
 	}
