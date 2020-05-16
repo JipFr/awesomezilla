@@ -49,7 +49,7 @@ function renderRooms() {
 		node.href = `?r=${room.token}`;
 		if (room.token === roomToken) {
 			node.classList.add("current");
-			document.querySelector("header .core .title .roomName").innerText = room.name;
+			document.querySelector("header .core .title .roomName").innerText = room.displayName || room.name;
 			document.querySelector("header .core .title .roomHashtag").innerText = `#${roomName}`;
 		}
 		if (room.unreadMessages > 0) node.classList.add("unread");

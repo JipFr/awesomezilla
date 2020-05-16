@@ -3,7 +3,6 @@
 function getHeadHtml(html: string) {
 	let headHtml;
 	let headStart = html.split(/\<head ?\>/)[1];
-	if(!headStart) console.log(html);
 	if(headStart) headHtml = headStart ? headStart.split("</head>")[0] : null;
 	return headHtml ?? "";	
 }

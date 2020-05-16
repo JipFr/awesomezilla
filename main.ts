@@ -111,4 +111,4 @@ async function getClient(auth: string) {
 
 
 await app.start({ port: 8081 });
-console.log(1);
+console.log("Started!");

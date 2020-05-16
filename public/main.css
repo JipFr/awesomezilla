@@ -168,7 +168,7 @@ aside {
 	position: fixed;
 	bottom: 0;
 
-	background: var(--bodyHarsh);
+	background: var(--body);
 
 	display: grid;
 	grid-template-columns: 1fr auto;
@@ -403,6 +403,7 @@ pre code {
 
 	.mainChat .inputDiv {
 		width: 100%;
+		background: var(--bodyHarsh);
 	}
 
 }
