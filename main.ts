@@ -1,12 +1,12 @@
-import { Application, Router, Context } from "https://deno.land/x/denotrain@v0.4.0/mod.ts";
-import { TrainStatic } from "https://deno.land/x/denotrain@v0.4.0/middleware/static/mod.ts";
+import { Application, Context } from "https://deno.land/x/abc@v1.0.0-rc3/mod.ts";
+import { renderFile } from "https://deno.land/x/dejs/mod.ts";
 import { Client, Message, Channel } from "https://deno.land/x/talk_lib/mod.ts"
+import { Parser, HtmlRenderer } from "https://cdn.pika.dev/commonmark@0.29.1"
 import { UserClients } from "./classes.ts";
-import {Parser, HtmlRenderer} from "https://cdn.pika.dev/commonmark@0.29.1"
 import { getEmbed } from "./embed.ts";
 
-let parser = new Parser()
-let renderer = new HtmlRenderer({safe: true})
+let parser = new Parser();
+let renderer = new HtmlRenderer({ safe: true });
 
 let toHTML = (str: string) => {
 	let ast = parser.parse(str);
@@ -14,21 +14,26 @@ let toHTML = (str: string) => {
 	return html;
 }
 
-const app: Application = new Application({ port: 8081 });
+const app: Application = new Application();
 const userClients: UserClients = {}
 
-app.use(ctx => {
-	ctx.res.addHeader("Access-Control-Allow-Origin", "*");
-	return;
+app.renderer = {
+	render<T>(name: string, data: T): Promise<Deno.Reader> {
+		return renderFile(name, data);
+	},
+};
+
+app.get("/", async (ctx: Context) => {
+	await ctx.render("./public/index.html");
 });
 
 app.get("/getEmbed", async (ctx: Context) => {
-	let embed = await getEmbed(ctx.req.query.url as string);
+	let embed = await getEmbed(ctx.queryParams.url as string);
 	return embed;
 });
 
 app.post("/getData", async (ctx: Context) => {
-	let query = ctx.req.body;
+	let query = await ctx.body() as {[key: string]: string};
 	if(query.auth) {
 		let client = await getClient(query.auth.toString());
 
@@ -63,8 +68,12 @@ app.post("/getData", async (ctx: Context) => {
 	}
 });
 
+interface PostMessageOptions {
+	[key: string]: string;
+}
+
 app.post("/postMessage", async (ctx: Context) => {
-	let query = ctx.req.body;
+	let query = await ctx.body() as PostMessageOptions;
 	if(query.auth && query.room) {
 		let client = await getClient(query.auth.toString());
 
@@ -86,8 +95,7 @@ app.post("/postMessage", async (ctx: Context) => {
 	}
 });
 
-app.use("/", new TrainStatic("./public"));
-
+app.static("/static", "public");
 
 /** Get Client object based on user's authentication */
 async function getClient(auth: string) {
@@ -102,5 +110,5 @@ async function getClient(auth: string) {
 }
 
 
-await app.run();
+await app.start({ port: 8081 });
 console.log(1);
