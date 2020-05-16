@@ -5,8 +5,6 @@
 	--text: #191919;
 	--textSecondary: #4c4c4c;
 
-
-
 	--sidebarWidth: 250px;
 	--offBg: #E0E3EA;
 	--border: rgba(0, 0, 0, 0.1);
@@ -44,6 +42,11 @@ header {
 	position: fixed;
 	top: 0;
 	left: 0;
+	z-index: 99;
+	border-top: env(safe-area-inset-top) solid transparent;
+}
+header .showSidebar {
+	display: none;
 }
 .section {
 	padding: 10px 20px;
@@ -59,6 +62,8 @@ header .core {
 }
 header .core .title {
 	margin: 0;
+	display: flex;
+	align-items: center;
 }
 header .core .title .roomHashtag {
 	opacity: .8;
@@ -117,32 +122,61 @@ aside {
 }
 
 .mainChat .inputDiv {
-	width: 100%;
-	height: var(--inputHeight);
+	width: calc(100% - var(--sidebarWidth));
+	height: calc(var(--inputHeight) + env(safe-area-inset-bottom));
 	position: fixed;
+	background: var(--body);
 	bottom: 0;
 	border-top: 1px solid var(--border);
+	display: grid;
+	grid-template-columns: 1fr auto;
+	grid-gap: 10px;
+	align-items: center;
+	padding: 0 20px;
+	padding-bottom: env(safe-area-inset-bottom);
+	box-sizing: border-box;
 }
 .mainChat .inputDiv .messageBox {
 	appearance: none;
 	-webkit-appearance: none;
 	font-size: 1rem;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 	width: calc(100% - var(--sidebarWidth) - 40px);
-	height: calc(100% - 20px - 10px);
+	height: 100%;
 	border: 0;
-	padding: 15px 20px;
 	resize: none;
+	background: transparent;
+	color: var(--text);
+	box-sizing: border-box;
+	padding: 15px 0px;
+	overflow-y: hidden;
+}
+.mainChat .inputDiv .send {
+	padding: 8px;
+	background: var(--main);
+	color: white;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 24px;
+	height: 24px;
+}
+.mainChat .inputDiv .send svg {
+	display: block;
+	transform: rotate(45deg) translate(-2px, 2px);
 }
 
 .messages {
-	width:  calc(100% - 40px);
-	max-width: calc(100% - 40px);
+	width: 100%;
+	max-width: 100%;
 	overflow-x: hidden;
 	padding: 70px 20px;
-	padding-bottom: calc(20px + var(--inputHeight));
+	padding-bottom: calc(20px + var(--inputHeight) + env(safe-area-inset-bottom));
 	display: grid;
 	grid-template-columns: 100%;
 	grid-gap: 10px;
+	box-sizing: border-box;
 }
 .message {
 	display: grid;
@@ -195,6 +229,18 @@ aside {
 	max-width: 300px;
 	max-height: 500px;
 	object-fit: contain;
+}
+
+/* Skeleton messages */
+[data-is-skeleton="true"] .body > p[data-is-fake], [data-is-skeleton="true"] .title {
+	background: var(--textSecondary);
+	opacity: 0.1;
+}
+[data-is-skeleton="true"] .title {
+	display: inline;
+}
+[data-is-skeleton="true"] .title > * {
+	opacity: 0;
 }
 
 /* Embeds */
@@ -251,4 +297,59 @@ pre code {
 	border-top-right-radius: 6px;
 	border-bottom-right-radius: 6px;
 	border-left: 3px solid var(--main);
+	word-break: normal;
+}
+
+@media screen and (max-width: 900px) {
+	.mainLayout {
+		grid-template-columns: 100%;
+	}
+	header .showSidebar {
+		display: flex;
+		margin-right: 20px;
+	}
+	body:not(.loaded) .showSidebar {
+		opacity: 0;
+		pointer-events: none;
+	}
+	[data-focus="core"] aside {
+		display: none;
+	}
+	[data-focus="aside"] .core {
+		display: none;
+	}
+
+	header .left {
+		display: none;
+	}
+	header .core .title .roomHashtag {
+		display: none;
+	}
+	aside {
+		position: initial;
+		max-height: initial;
+		height: auto;
+		border: 0;
+	}
+	.sidebarWidth {
+		width: 100%;
+	}
+	.message .body p[data-id] img.embed {
+		width: 100%;
+	}
+	.mainChat .inputDiv .messageBox {
+		width: 100%;
+	}
+
+	.codeWrapper {
+		max-width: calc(100vw - 90px);
+	}
+	pre {
+		white-space: pre;
+	}
+
+	.mainChat .inputDiv {
+		width: 100%;
+	}
+
 }
