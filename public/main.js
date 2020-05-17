@@ -95,6 +95,10 @@ function renderRooms() {
 		if (room.unreadMention) node.classList.add("unreadMention");
 
 		wrapper.appendChild(node);
+
+		// HR
+		wrapper.appendChild(document.createElement("hr"));
+
 	}
 }
 function renderChat() {

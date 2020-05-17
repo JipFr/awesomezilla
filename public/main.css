@@ -129,6 +129,13 @@ aside {
 	padding: 40px 0;
 	border-top: env(safe-area-inset-top) solid transparent;
 }
+.rooms hr {
+	margin: 0;
+	width: 100%;
+	height: 1px;
+	border: 0;
+	background: var(--border);
+}
 .room {
 	position: relative;
 	z-index: 0;
@@ -144,7 +151,7 @@ aside {
 }
 .room img.roomImage {
 	width: 100%;
-	height: 38px;
+	height: 40px;
 	border: 1px solid var(--border);
 	display: block;
 	border-radius: 4px;
@@ -169,6 +176,9 @@ aside {
 }
 .room:hover, .room.current {
 	background: var(--border);
+	border-left: 10px solid transparent;
+	border-radius: 0;
+	margin: 0;
 }
 
 .room.unread:before {
@@ -440,6 +450,13 @@ pre code {
 	}
 	.sidebarWidth {
 		width: 100%;
+	}
+	.room {
+		grid-template-columns: 50px 1fr;
+		grid-gap: 15px;
+	}
+	.room img.roomImage {
+		height: 50px;
 	}
 	.message .body p[data-id] img.embed {
 		width: 100%;
