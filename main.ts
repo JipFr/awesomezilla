@@ -5,6 +5,10 @@ import { Parser, HtmlRenderer } from "https://cdn.pika.dev/commonmark@0.29.1"
 import { UserClients } from "./classes.ts";
 import { getEmbed } from "./embed.ts";
 
+let iconCache: {
+	/** User id with UINT8array */
+	[key: string]: Uint8Array;
+} = {};
 let parser = new Parser();
 let renderer = new HtmlRenderer({ safe: true });
 
@@ -110,18 +114,31 @@ async function getClient(auth: string) {
 }
 
 app.get("/image/:id", async (ctx) => {
-	let avatarReq = await fetch(`https://box.ictmaatwerk.com/avatar/${ctx.params.id}/256`, {
-		headers: {
-			"Ocs-Apirequest": "true",
-			"Accept": "application/json, text/plain, */*",
-			"Authorization": `Basic ${ctx.queryParams.auth}`
-		}
-	});
-	// This will succeed
+	if(!iconCache[ctx.params.id]) {
+		let avatarReq = await fetch(`https://box.ictmaatwerk.com/avatar/${ctx.params.id}/256`, {
+			headers: {
+				"Ocs-Apirequest": "true",
+				"Accept": "application/json, text/plain, */*",
+				"Authorization": `Basic ${ctx.queryParams.auth}`
+			}
+		});
+		// This will succeed
+		let buffer = await avatarReq.arrayBuffer();
+		let arr = new Uint8Array(buffer);
+		iconCache[ctx.params.id] = arr;
+		return arr;
+	} else {
+		return iconCache[ctx.params.id];
+	}
+});
+
+// Used for proxying via.placeholder.com so that we can use toDataURL it to cache it on the client-side
+app.get("/placeholderImage/:resolution/:colorA/:colorB", async (ctx) => {
+	let avatarReq = await fetch(`https://via.placeholder.com/${ctx.params.resolution}.png/${ctx.params.colorA}/${ctx.params.colorB}?text=${ctx.queryParams.text || "%20"}`, {});
 	let buffer = await avatarReq.arrayBuffer();
 	let arr = new Uint8Array(buffer);
 	return arr;
-});
+})
 
 await app.start({ port: 8081 });
 console.log("Started!");

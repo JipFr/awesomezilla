@@ -118,6 +118,7 @@ aside {
 	overflow-y: auto;
 	position: sticky;
 	top: 50px;
+	resize: horizontal;
 }
 
 .rooms {
@@ -131,16 +132,40 @@ aside {
 .room {
 	position: relative;
 	z-index: 0;
-	display: flex;
-	align-items: center;
-	padding: 8px 20px;
+	padding: 8px 10px;
 	margin: 0 10px;
 	border-radius: 4px;
 	color: inherit;
 	text-decoration: none;
+	display: grid;
+	align-items: center;
+	grid-template-columns: 40px 1fr;
+	grid-gap: 10px;
+}
+.room img.roomImage {
+	width: 100%;
+	height: 38px;
+	border: 1px solid var(--border);
+	display: block;
+	border-radius: 4px;
+	background: var(--border);
 }
 .room .text {
 	width: 100%;
+}
+.room .text > * {
+	margin: 0;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+	overflow-y: hidden;
+}
+.room .text .title {
+	font-size: 1rem;
+	font-weight: 500;
+}
+.room .text .body {
+	color: var(--textSecondary);
 }
 .room:hover, .room.current {
 	background: var(--border);
@@ -258,11 +283,16 @@ aside {
 	word-break: break-word;
 	margin-top: 5px;
 }
-.message .body a {
+.message .body a, .room a {
 	color: var(--main);
 	text-decoration: none;
 }
-.message .body a:hover {
+.room a {
+	color: var(--textSecondary);
+	opacity: 0.5;
+	pointer-events: none;
+}
+.message .body a:hover, .room a:hover {
 	text-decoration: underline;
 }
 .message .body .parameter {
@@ -406,6 +436,7 @@ pre code {
 		max-height: initial;
 		height: auto;
 		border: 0;
+		resize: none;
 	}
 	.sidebarWidth {
 		width: 100%;

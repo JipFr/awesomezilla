@@ -11,6 +11,38 @@ let urlMatch = location.href.match(/\?r=(.+)/);
 let roomToken = urlMatch ? urlMatch[1] : null;
 let urlCache = {};
 let peopleImgCache = {};
+let roomImageCache = {};
+
+/**
+ * Correct room image's source
+ * @param imgElement <img> element
+ */
+function correctRoomImage(imgElement) {
+	let wrapper = imgElement.closest("[data-token]");
+	let token = wrapper.dataset.token;
+	roomImageCache[token] = "/static/img/group.png"
+	imgElement.src = roomImageCache[token];
+}
+
+/**
+ * Store room image's source as b64 to prevent flickering
+ * @param imgElement <img> element
+ */
+function storeRoomImage(imgElement) {
+	let wrapper = imgElement.closest("[data-token]");
+	let token = wrapper.dataset.token;
+	if(!roomImageCache[token]) {
+		// Get base64 URL for image
+		let canvas = document.createElement("canvas");
+		let ctx = canvas.getContext("2d");
+		canvas.width = imgElement.naturalWidth;
+		canvas.height = imgElement.naturalHeight;
+		ctx.drawImage(imgElement, 0, 0);
+
+		roomImageCache[token] = canvas.toDataURL();
+		imgElement.src = roomImageCache[token];
+	}
+}
 
 /**
  * Correct image's source
@@ -24,7 +56,7 @@ function correctImage(imgElement) {
 			userName: imgElement.closest(".message").querySelector(".name").innerText
 		}
 	}
-	imgElement.src = `https://via.placeholder.com/300.png/${peopleImgCache[userId].bg}/fff/?text=${peopleImgCache[userId].userName.slice(0, 1).toUpperCase()}`
+	imgElement.src = `/placeholderImage/300/${peopleImgCache[userId].bg}/fff?text=${peopleImgCache[userId].userName.slice(0, 1).toUpperCase()}`
 	// imgElement.src = `/static/img/u-not-found.png`;
 }
 
@@ -44,8 +76,15 @@ function renderRooms() {
 	for (let room of data.channels) {
 		let node = document.importNode(document.querySelector("template.room").content, true).querySelector("*");
 
+		node.setAttribute("data-token", room.token);
 		let roomName = parseRoomName(room.displayName || room.name);
-		node.querySelector(".channelName").innerText = roomName;
+		// Room's image
+		node.querySelector(".roomImage").src = roomImageCache[room.token] || `/image/${room.name}?auth=${getAuth()}`;
+		// Channel's name, say "Embed preview" or "Jip BOT"
+		node.querySelector(".channelName").innerText = room.displayName || room.name;
+		// Last message author & content
+		node.querySelector(".body .authorName").innerText = room.lastMessage.actorId !== atob(getAuth()).split(":")[0] ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
+		node.querySelector(".body .lastMessage").innerHTML = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage)[0]; // 200 for no real reason.
 		node.href = `?r=${room.token}`;
 		if (room.token === roomToken) {
 			node.classList.add("current");
@@ -150,7 +189,7 @@ function embedError(imgElement) {
 function drawEmbeds() {
 	let shouldScroll = (window.innerHeight + window.scrollY) >= document.body.offsetHeight;
 	// Now actually add the nodes...
-	let links = [...document.querySelectorAll("a.doEmbed")];
+	let links = [...document.querySelectorAll(".messages a.doEmbed")];
 	for (let a of links) {
 		if (!a.getAttribute("data-rendered-embed") && urlCache[a.href]) {
 			let p = a.closest("p[data-id]");
@@ -190,7 +229,7 @@ function getMessageNode(message) {
 	node.querySelector(".name").textContent = authorName !== "Unknown factor" ? authorName : "Unknown user";
 	node.querySelector(".time").textContent = `${message.date.getHours().toString().padStart(2, "0")}:${message.date.getMinutes().toString().padStart(2, "0")}`;
 
-	node.querySelector(".authorImg").src = message.fake ? `http://via.placeholder.com/1.png/4c4c4c?text=%20` : `/image/${message.author.id}?auth=${getAuth()}`
+	node.querySelector(".authorImg").src = `/image/${message.author.id}?auth=${getAuth()}`
 
 	return node;
 }
@@ -205,7 +244,7 @@ function toBodyText(str, message) {
 		if (str[index - 1] !== `"`) str = str.replace(urlRegex, `<a class="link doEmbed" href="$1" target="_blank">$1</a>`);
 	}
 
-	let par = message.parameters;
+	let par = message.parameters || message.messageParameters;
 	for (let key of Object.keys(par)) {
 		let replacingStr = `{${key}}`;
 		if (par[key].type === "user") {
@@ -268,12 +307,21 @@ function updateInputHeight(input = document.querySelector(".inputDiv .messageBox
 	window.scrollTo(0, document.body.offsetHeight);
 }
 
+// This is fired by the MutationObserver
+function storeSidebarWidth() {
+	localStorage.setItem("sidebarWidth", document.querySelector("aside").style.width);
+	document.body.setAttribute("style", `--sidebarWidth: ${localStorage.getItem("sidebarWidth")}`);
+}
+
 async function init() {
 
 	document.body.setAttribute("data-is-ios", /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
 
-	const ipsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed ddolor sit amet, consetetur sadipscing elitr,";
+	if(localStorage.getItem("sidebarWidth") && document.body.getAttribute("data-is-ios") === "false") {
+		document.body.setAttribute("style", `--sidebarWidth: ${localStorage.getItem("sidebarWidth")}`);
+	}
 
+	const ipsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed ddolor sit amet, consetetur sadipscing elitr,";
 	for (let i = 0; i < 20; i++) {
 		let index = Math.floor(Math.random() * ipsum.length);
 		let random = Math.floor(Math.random() * 5)
@@ -289,6 +337,11 @@ async function init() {
 		});
 	}
 	renderChat();
+
+	let sidebarObserver = new MutationObserver(storeSidebarWidth);
+	sidebarObserver.observe(document.querySelector("aside"), {
+		attributes: true
+	});
 
 	document.querySelector(".showSidebar").addEventListener("click", evt => {
 		if (document.body.dataset.focus === "aside") {
