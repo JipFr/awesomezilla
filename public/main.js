@@ -306,15 +306,80 @@ function getISO8601(d) {
 }
 
 function updateInputHeight(input = document.querySelector(".inputDiv .messageBox")) {
-	document.body.setAttribute("style", `--inputHeight: 0;`);
-	document.body.setAttribute("style", `--inputHeight: ${Math.max(input.scrollHeight - 16, 50)}px;`);
+	document.body.style.setProperty("--inputHeight", 0);
+	document.body.style.setProperty("--inputHeight", Math.max(input.scrollHeight - 16, 50) + "px");
 	window.scrollTo(0, document.body.offsetHeight);
 }
 
 // This is fired by the MutationObserver
 function storeSidebarWidth() {
-	localStorage.setItem("sidebarWidth", document.querySelector("aside").style.width);
-	document.body.setAttribute("style", `--sidebarWidth: ${localStorage.getItem("sidebarWidth")}`);
+	localStorage.setItem("sidebarWidth", document.querySelector("aside").scrollWidth + "px");
+	document.body.style.setProperty("--sidebarWidth", localStorage.getItem("sidebarWidth"));
+}
+
+async function checkCommands(messageBox = document.querySelector(".messageBox")) {
+	let v = messageBox.innerText.trim();
+	if(v.startsWith("/")) {
+		let full = v.slice(1).split(" ");
+		let command = full[0];
+		let args = full.slice(1).join(" ");
+		if(args.length > 0) {
+
+			// Now do the commands!
+			if(command === "gif") {
+				searchGifs(args);
+				return;
+			} 
+		}
+	}
+
+	document.querySelectorAll(".gifSearch.visible").forEach(el => {
+		el.classList.remove("visible");
+	});
+}
+
+async function searchGifs(searchTerm) {
+	let wrapper = document.querySelector(".gifSearch");
+	wrapper.classList.add("visible");
+	let url = `https://api.tenor.com/v1/search?q=${encodeURIComponent(searchTerm)}&key=PA1OEU0OVSFH&limit=12`;
+	let searchData = await (await fetch(url)).json();
+	console.log(searchData);
+
+	let gifDiv = document.querySelector(".gifDiv"); // To be changed...
+	gifDiv.innerHTML = "";
+
+	for(let result of searchData.results) {
+		let node = document.createElement("img");
+		node.classList.add("gif");
+		
+		// Make tabbable
+		node.setAttribute("tabindex", 0);
+		
+		// Set source to small GIF
+		node.src = result.media[0].tinygif.url;
+
+		// Create function for selecting GIFs
+		function selectGif() {
+			document.querySelector(".messageBox").focus();
+			document.querySelector(".messageBox").innerText = result.media[0].gif.url;
+			checkCommands();
+			// Set cursor position at end
+			let sel = window.getSelection();
+			sel.setPosition(sel.anchorNode, sel.anchorNode.parentNode.innerText.length);
+			// Clean up
+			document.querySelectorAll(".gifDiv .gif").forEach(el => el.remove());
+		}
+		// Set input on clicks
+		node.addEventListener("click", selectGif);
+		node.addEventListener("keyup", evt => {
+			if(evt.key === "Enter") selectGif();
+		});
+
+
+		// Add GIF to DOM
+		gifDiv.appendChild(node);
+	}
+
 }
 
 async function init() {
@@ -322,7 +387,7 @@ async function init() {
 	document.body.setAttribute("data-is-ios", /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
 
 	if(localStorage.getItem("sidebarWidth") && document.body.getAttribute("data-is-ios") === "false") {
-		document.body.setAttribute("style", `--sidebarWidth: ${localStorage.getItem("sidebarWidth")}`);
+		document.body.style.setProperty("--sidebarWidth", localStorage.getItem("sidebarWidth"));
 	}
 
 	const ipsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed ddolor sit amet, consetetur sadipscing elitr,";
@@ -359,6 +424,7 @@ async function init() {
 	document.querySelector(".inputDiv .send").addEventListener("click", sendMessage);
 	document.querySelector(".messageBox").addEventListener("input", evt => {
 		updateInputHeight(evt.currentTarget);
+		checkCommands(evt.currentTarget);
 	});
 
 	document.querySelector(".messageBox").addEventListener("keyup", evt => {

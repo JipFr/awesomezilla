@@ -19,23 +19,48 @@ export async function getEmbed(url: string): Promise<string> {
 
 	if(url.match(/https:\/\/imgur\.com\/(a\/)?(.+)/gi)) { // Imgur embedding
 		return `<iframe src="${url}/embed" scrolling="no" class="embedFrame"></iframe>`
-	} else if(url.match(/https:\/\/giphy\.com\/gifs\//gi)) { // Giphy embedding
+	} 
+	
+	if(url.match(/https:\/\/giphy\.com\/gifs\//gi) || url.match(/https:\/\/tenor\.com\/view\//gi)) { // Giphy embedding
 		let html = await embedReq.text();
 		let headHtml = getHeadHtml(html);
 		
 		let image;
 		if(headHtml) image = getProperty(headHtml, ["apple-touch-icon", "twitter:image:src", "og:image", "icon"]);
-		return `<img src="${image}" class="embed">`;
-	} else if(url.match(/https:\/\/media(\d)?\.giphy\.com\/media\//gi)) {
+		if(image) return `<img src="${image}" class="embed">`;
+	} 
+	
+	if(url.match(/https:\/\/media(\d)?\.giphy\.com\/media\//gi)) { // media.giphy.com embedding
 		return `<img src="${url.replace(/\.webp/g, ".gif")}" class="embed">`;
-	} else if(ct === "text/html" || ct === "text/plain") { // HTML pages
+	} 
+	
+	if(url.match(/https:\/\/streamable\.com\/(.+)/gi)) {
+		let html = await embedReq.text();
+		let headHtml = getHeadHtml(html);
+	
+		let video, image;
+		if(headHtml) {
+			image = getProperty(headHtml, ["apple-touch-icon", "twitter:image:src", "og:image", "icon"]);
+			video = getProperty(headHtml, ["og:video"]);
+		}
+
+		let validImage = image && image !== "undefined" && !image.endsWith("undefined")
+		let showImage = validImage && !video; // If there's a video, use the image for the 
+
+		if(video) return `<video class="embedVideo" src="${video}" ${validImage ? `poster="${image}"` : ""} controls></video>`;
+
+	} 
+	if(ct === "text/html" || ct === "text/plain") { // HTML pages
 		let html = await embedReq.text();
 		let headHtml = getHeadHtml(html);
 
-		let title, description, image;
-		if(headHtml) title = getProperty(headHtml, ["og:title", "twitter:title", "title"]);
-		if(headHtml) description = getProperty(headHtml, ["og:description", "twitter:description", "description"]);
-		if(headHtml) image = getProperty(headHtml, ["apple-touch-icon", "twitter:image:src", "og:image", "icon"]);
+		let title, description, image, video;
+		if(headHtml) {
+			title = getProperty(headHtml, ["og:title", "twitter:title", "title"]);
+			description = getProperty(headHtml, ["og:description", "twitter:description", "description"]);
+			image = getProperty(headHtml, ["apple-touch-icon", "twitter:image:src", "og:image", "icon"]);
+			video = getProperty(headHtml, ["og:video"]);
+		}
 
 		// Image URLs are going to require some work... This is NOWHERE NEAR perfect!!
 		if(!image?.startsWith("http")) {
@@ -56,23 +81,25 @@ export async function getEmbed(url: string): Promise<string> {
 			description = description?.slice(0, 200) + "...";
 		}
 
-		let validImage = image && image !== "undefined" && !image.endsWith("undefined");
-		if(validImage || title || description) {
+		let validImage = image && image !== "undefined" && !image.endsWith("undefined")
+		let showImage = validImage; // If there's a video, use the image for the 
+		
+		if(validImage || title || description || video) {
 			return `
-			<div class="embed urlEmbed" data-has-image="${validImage}">
-				${validImage ? `<div class="imageDiv"><img src="${image}" class="embedImage" onerror="embedError(this);"></div>` : ""}
+			<div class="embed urlEmbed" data-has-image="${showImage}">
+				${showImage ? `<div class="imageDiv"><img src="${image}" class="embedImage" onerror="embedError(this);"></div>` : ""}
 				<div class="embedCore">
 					${title ? `<h3 class="embedTitle">${title}</h3>` : ""}
 					${url ? `<a href="${url}" target="_blank" class="embedUrl">${url.length > 100 ? url.slice(0, 100) + "..." : url}</a>` : ""}
 					${description ? `<p class="embedDescription">${description}</p>` : ""}
+					${video ? `<video class="embedVideo" src="${video}" ${validImage ? `poster="${image}"` : ""} controls></video>` : ""}
 				</div>
 			</div>
 			`
-		} else {
-			return "";
 		}
-	} else if(ct?.startsWith("image/")) { // Images, obviously
-		return `<img src="${url}" class="embed">`
+	}
+	if(ct?.startsWith("image/")) { // Images, obviously
+		return `<img src="${url}" class="embed">`;
 	}
 
 	return `Unknown content type for ${url}: ${ct}`;
