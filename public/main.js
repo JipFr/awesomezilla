@@ -317,6 +317,7 @@ function storeSidebarWidth() {
 	document.body.style.setProperty("--sidebarWidth", localStorage.getItem("sidebarWidth"));
 }
 
+let debounceSearch;
 async function checkCommands(messageBox = document.querySelector(".messageBox")) {
 	let v = messageBox.innerText.trim();
 	if(v.startsWith("/")) {
@@ -327,7 +328,10 @@ async function checkCommands(messageBox = document.querySelector(".messageBox"))
 
 			// Now do the commands!
 			if(command === "gif") {
-				searchGifs(args);
+				if(debounceSearch) clearTimeout(debounceSearch);
+				debounceSearch = setTimeout(() => {
+					searchGifs(args);
+				}, 200);
 				return;
 			} 
 		}
@@ -343,7 +347,6 @@ async function searchGifs(searchTerm) {
 	wrapper.classList.add("visible");
 	let url = `https://api.tenor.com/v1/search?q=${encodeURIComponent(searchTerm)}&key=PA1OEU0OVSFH&limit=12`;
 	let searchData = await (await fetch(url)).json();
-	console.log(searchData);
 
 	let gifDiv = document.querySelector(".gifDiv"); // To be changed...
 	gifDiv.innerHTML = "";
@@ -355,6 +358,13 @@ async function searchGifs(searchTerm) {
 		// Make tabbable
 		node.setAttribute("tabindex", 0);
 		
+		// Add loaded class when loaded
+		node.addEventListener("load", (evt) => {
+			node.classList.add("loaded");
+			let el = evt.currentTarget;
+			el.style.minWidth = ((el.naturalWidth / el.naturalHeight) * el.scrollHeight) + "px"
+		});
+
 		// Set source to small GIF
 		node.src = result.media[0].tinygif.url;
 
