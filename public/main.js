@@ -1,6 +1,6 @@
 const projectOpts = {
 	rootUrl: location.host,
-	protocol: "http"
+	protocol: location.protocol.replace(/:/g, "")
 }
 
 let data = {
