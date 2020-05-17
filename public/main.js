@@ -193,9 +193,9 @@ function embedError(imgElement) {
 function drawEmbeds() {
 	let shouldScroll = (window.innerHeight + window.scrollY) >= document.body.offsetHeight;
 	// Now actually add the nodes...
-	let links = [...document.querySelectorAll(".messages a.doEmbed")];
+	let links = [...document.querySelectorAll(".messages a")];
 	for (let a of links) {
-		if (!a.getAttribute("data-rendered-embed") && urlCache[a.href]) {
+		if (!a.getAttribute("data-rendered-embed") && urlCache[a.href] && !a.closest(".urlEmbed")) {
 			let p = a.closest("p[data-id]");
 			if (!p.querySelector(".embedWrapper")) {
 				let div = document.createElement("div");
@@ -259,6 +259,8 @@ function toBodyText(str, message) {
 		}
 	}
 
+	str = str.replace(/r\/([a-zA-Z]+)/g, `<a href="https://reddit.com/r/$1" class="link subreddit reddit" target="_blank">r/$1</a>`);
+
 	// We need a node for HLJS to highlight,
 	// so that's what we're doing.
 	let div = document.createElement("div");
@@ -269,7 +271,8 @@ function toBodyText(str, message) {
 		let parent = block.parentNode;
 		parent.outerHTML = `<div class="codeWrapper">${parent.outerHTML}</div>`
 
-	})
+	});
+
 
 	return [div.innerHTML, suffix];
 }
