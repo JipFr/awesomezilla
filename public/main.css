@@ -35,6 +35,9 @@
 	p > code {
 		color: black;
 	}
+	[data-is-ios="true"] header {
+		--headerArrow: #147EFB;
+	}
 }
 
 html, body {
@@ -77,7 +80,6 @@ header {
 	color: var(--headerText);
 	-webkit-backdrop-filter: blur(15px);
 	backdrop-filter: blur(15px);
-	--headerArrow: #147EFB;
 }
 [data-is-ios="false"] header {
 	border-top-color: rgba(0, 0, 0, 0.1);

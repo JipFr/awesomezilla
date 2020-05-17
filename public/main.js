@@ -190,8 +190,7 @@ function getMessageNode(message) {
 	node.querySelector(".name").textContent = authorName !== "Unknown factor" ? authorName : "Unknown user";
 	node.querySelector(".time").textContent = `${message.date.getHours().toString().padStart(2, "0")}:${message.date.getMinutes().toString().padStart(2, "0")}`;
 
-	node.querySelector(".authorImg").src = message.fake ? `http://via.placeholder.com/1.png/4c4c4c?text=%20` : `https://box.ictmaatwerk.com/avatar/${message.author.id}/256`
-	// node.querySelector(".authorImg").src = message.fake ? `http://via.placeholder.com/1.png/4c4c4c?text=%20` : `/image/${message.author.id}?auth=${getAuth()}`
+	node.querySelector(".authorImg").src = message.fake ? `http://via.placeholder.com/1.png/4c4c4c?text=%20` : `/image/${message.author.id}?auth=${getAuth()}`
 
 	return node;
 }

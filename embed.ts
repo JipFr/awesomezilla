@@ -17,17 +17,17 @@ export async function getEmbed(url: string): Promise<string> {
 	});
 	let ct = embedReq.headers.get("content-type")?.split(";")[0];
 
-	let imgurMatch = url.match(/https:\/\/imgur\.com\/(a\/)?(.+)/gi);
-	let giphyMatch = url.match(/https:\/\/giphy\.com\/gifs\//gi);
-	if(imgurMatch) { // Imgur embedding
+	if(url.match(/https:\/\/imgur\.com\/(a\/)?(.+)/gi)) { // Imgur embedding
 		return `<iframe src="${url}/embed" scrolling="no" class="embedFrame"></iframe>`
-	} else if(giphyMatch) {
+	} else if(url.match(/https:\/\/giphy\.com\/gifs\//gi)) { // Giphy embedding
 		let html = await embedReq.text();
 		let headHtml = getHeadHtml(html);
 		
 		let image;
 		if(headHtml) image = getProperty(headHtml, ["apple-touch-icon", "twitter:image:src", "og:image", "icon"]);
-		return `<img src="${image}" class="embed">`
+		return `<img src="${image}" class="embed">`;
+	} else if(url.match(/https:\/\/media(\d)?\.giphy\.com\/media\//gi)) {
+		return `<img src="${url.replace(/\.webp/g, ".gif")}" class="embed">`;
 	} else if(ct === "text/html" || ct === "text/plain") { // HTML pages
 		let html = await embedReq.text();
 		let headHtml = getHeadHtml(html);
