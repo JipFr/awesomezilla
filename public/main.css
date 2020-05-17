@@ -486,9 +486,10 @@ pre code {
 		height: auto;
 		border: 0;
 		resize: none;
+		max-width: 100%;
 	}
 	.sidebarWidth {
-		width: 100%;
+		width: 100% !important; /* :( */
 	}
 	.room {
 		grid-template-columns: 50px 1fr;
