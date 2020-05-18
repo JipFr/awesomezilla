@@ -2,7 +2,8 @@
 /** Get HEAD html from HTML string */
 function getHeadHtml(html: string) {
 	let headHtml;
-	let headStart = html.split(/\<head ?\>/)[1];
+	let headStart = html.split(/\<head ?([\n\t ]+)?(.+)?\>/).filter(i => i && i.includes("<"))[1];
+	console.log(headStart);
 	if(headStart) headHtml = headStart ? headStart.split("</head>")[0] : null;
 	return headHtml ?? "";	
 }
@@ -102,7 +103,7 @@ export async function getEmbed(url: string): Promise<string> {
 		return `<img src="${url}" class="embed">`;
 	}
 
-	return `Unknown content type for ${url}: ${ct}`;
+	return `No matched for ${url} with content-type ${ct}`;
 }
 
 /** Get propery from head HTML
