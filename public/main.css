@@ -259,7 +259,7 @@ aside {
 .mainChat .inputDiv .gifSearch {
 	position: absolute;
 	left: 0;
-	bottom: 100%;
+	bottom: calc(100% + 1px);
 	padding: 20px;
 	height: auto;
 	border-top: 1px solid var(--border);
@@ -444,7 +444,7 @@ pre code {
 	border-radius: 0;
 	border-top-right-radius: 6px;
 	border-bottom-right-radius: 6px;
-	border-left: 3px solid var(--main);
+	border-left: 3px solid #B0B238;
 	word-break: normal;
 }
 

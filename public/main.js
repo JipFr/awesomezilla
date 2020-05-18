@@ -206,9 +206,7 @@ function drawEmbeds() {
 			p.querySelector(".embedWrapper").innerHTML += urlCache[a.href] || "";
 			p.querySelectorAll(".embedWrapper img").forEach(el => {
 				el.addEventListener("load", () => {
-					if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - el.scrollHeight) {
-						window.scrollTo(0, document.body.offsetHeight);
-					}
+					window.scrollTo(0, document.body.offsetHeight);
 				});
 			})
 			a.setAttribute("data-rendered-embed", true);
@@ -259,7 +257,7 @@ function toBodyText(str, message) {
 		}
 	}
 
-	str = str.replace(/r\/([a-zA-Z]+)/g, `<a href="https://reddit.com/r/$1" class="link subreddit reddit" target="_blank">r/$1</a>`);
+	str = str.replace(/(\W|^)r\/([a-zA-Z]+)/g, `<a href="https://reddit.com/r/$1" class="link subreddit reddit" target="_blank">r/$1</a>`);
 
 	// We need a node for HLJS to highlight,
 	// so that's what we're doing.
@@ -448,10 +446,16 @@ async function init() {
 
 	loopMain(true); // It's init, so I'm passing true
 
+	if(!roomToken) {
+		document.body.setAttribute("data-focus", "aside");
+		window.scrollTo(0, 0);
+	}
+
 }
 
 function sendMessage() {
 	let input = document.querySelector(".messageBox");
+	input.focus();
 	let v = input.innerText;
 	input.innerHTML = "";
 
@@ -479,6 +483,7 @@ function sendMessage() {
 			auth: getAuth()
 		})
 	}).then(main);
+
 }
 
 function loopMain(init = false) {
