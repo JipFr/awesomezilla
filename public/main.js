@@ -306,9 +306,7 @@ function getISO8601(d) {
 	return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`
 }
 
-function updateInputHeight(input = document.querySelector(".inputDiv .messageBox")) {
-	document.body.style.setProperty("--inputHeight", 0);
-	document.body.style.setProperty("--inputHeight", Math.max(input.scrollHeight - 16, 50) + "px");
+function toBottom() {
 	window.scrollTo(0, document.body.offsetHeight);
 }
 
@@ -434,7 +432,7 @@ async function init() {
 
 	document.querySelector(".inputDiv .send").addEventListener("click", sendMessage);
 	document.querySelector(".messageBox").addEventListener("input", evt => {
-		updateInputHeight(evt.currentTarget);
+		toBottom();
 		checkCommands(evt.currentTarget);
 	});
 
@@ -470,7 +468,7 @@ function sendMessage() {
 	});
 
 	renderChat();
-	updateInputHeight();
+	toBottom();
 
 	fetch(`/postMessage`, {
 		method: "POST",

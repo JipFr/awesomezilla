@@ -209,7 +209,7 @@ aside {
 
 .mainChat .inputDiv {
 	width: calc(100% - var(--sidebarWidth));
-	height: calc(var(--inputHeight) + env(safe-area-inset-bottom));
+	min-height: calc(var(--inputHeight) + env(safe-area-inset-bottom));
 	/* overflow-y: hidden; */
 	
 	position: fixed;
