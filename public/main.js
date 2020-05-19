@@ -279,7 +279,7 @@ function openImage(imgElement) {
 	overlay.querySelector(".original").href = imgElement.getAttribute("data-original");
 
 	overlay.addEventListener("click", evt => {
-		if(!([...evt.path].includes(overlay.querySelector("*")))) {
+		if(!([...evt.composedPath()].includes(overlay.querySelector("*")))) {
 			document.querySelectorAll(".overlayWrapper").forEach(el => el.remove());
 		}
 	});
