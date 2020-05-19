@@ -5,10 +5,12 @@ import { Parser, HtmlRenderer } from "https://cdn.pika.dev/commonmark@0.29.1"
 import { UserClients } from "./classes.ts";
 import { getEmbed } from "./embed.ts";
 
-let iconCache: {
+interface ImageCache {
 	/** User id with UINT8array */
 	[key: string]: Uint8Array;
-} = {};
+}
+let iconCache: ImageCache= {};
+let previewCache: ImageCache= {};
 let parser = new Parser();
 let renderer = new HtmlRenderer({ safe: true });
 
@@ -129,6 +131,26 @@ app.get("/image/:id", async (ctx) => {
 		return arr;
 	} else {
 		return iconCache[ctx.params.id];
+	}
+});
+
+app.get("/image-preview/:id", async ctx => {
+	if(!previewCache[ctx.params.id]) {
+		let avatarReq = await fetch(`https://box.ictmaatwerk.com/core/preview?fileId=${ctx.params.id}&x=1920&y=1080&a=true`, {
+			headers: {
+				"Ocs-Apirequest": "true",
+				"Accept": "application/json, text/plain, */*",
+				"Authorization": `Basic ${ctx.queryParams.auth}`
+			}
+		});
+
+		let buffer = await avatarReq.arrayBuffer();
+		let arr = new Uint8Array(buffer);
+		previewCache[ctx.params.id] = arr;
+
+		return arr;
+	} else {
+		return previewCache[ctx.params.id];
 	}
 });
 

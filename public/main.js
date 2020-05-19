@@ -89,21 +89,28 @@ function renderRooms() {
 
 		node.setAttribute("data-token", room.token);
 		let roomName = parseRoomName(room.displayName || room.name);
+		
 		// Room's image
 		node.querySelector(".roomImage").src = roomImageCache[room.token] || `/image/${room.name}?auth=${getAuth()}`;
+		
 		// Channel's name, say "Embed preview" or "Jip BOT"
 		node.querySelector(".channelName").innerText = room.displayName || room.name;
+		
 		// Last message author & content
 		node.querySelector(".body .authorName").innerText = room.lastMessage.actorId !== atob(getAuth()).split(":")[0] ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
 		node.querySelector(".body .lastMessage").innerHTML = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage)[0]; // 200 for no real reason.
 		node.href = `#${room.token}`;
+
+		// If it's the current one...
 		if (room.token === roomToken) {
 			node.classList.add("current");
 			document.querySelector("header .core .title .roomName").innerText = room.displayName || room.name;
 			document.querySelector("header .core .title .roomHashtag").innerText = `#${roomName}`;
 		}
+
 		if (room.unreadMessages > 0) node.classList.add("unread");
 		if (room.unreadMention) node.classList.add("unreadMention");
+		if(room.isFavorite) node.classList.add("favorite");
 
 		wrapper.appendChild(node);
 
@@ -265,6 +272,15 @@ function toBodyText(str, message) {
 			while (str.includes(replacingStr)) {
 				str = str.replace(replacingStr, newStr);
 			}
+		} else if(par[key].type === "file" && par[key].mimetype.startsWith("image")) {
+			console.log(par[key], key, replacingStr);
+			let link = par[key].link;
+			let newStr = `<a href="${link}" target="_blank"><img class="embed" src="/image-preview/${par[key].id}?auth=${getAuth()}"></a>`;
+			while (str.includes(replacingStr)) {
+				str = str.replace(replacingStr, newStr);
+			}
+		} else {
+			console.log(par[key]);
 		}
 	}
 
@@ -408,7 +424,7 @@ async function init() {
 	roomToken = urlMatch ? urlMatch[1] : null;
 
 	// Get rid of pre-existing message elements, clean up from previous hash
-	document.querySelectorAll(".mainChat .message").forEach(el => el.remove());
+	document.querySelectorAll(".mainChat .messages > *").forEach(el => el.remove());
 	document.querySelector(".roomName").innerText = (data.channels.find(r => r.token === roomToken) || {}).displayName || "";
 
 	// Set iOS attributes
@@ -532,6 +548,7 @@ async function main(iteration) {
 	document.querySelectorAll(`[data-is-skeleton="true"]`).forEach(el => el.remove());
 	// Sort channels by latest message
 	data.channels = data.channels.sort((a, b) => b.lastMessage.timestamp - a.lastMessage.timestamp);
+	data.channels = data.channels.sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite));
 
 	// Render rooms & chat
 	renderRooms();
