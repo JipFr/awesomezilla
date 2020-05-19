@@ -18,9 +18,14 @@ export async function getEmbed(url: string): Promise<string> {
 	let ct = embedReq.headers.get("content-type")?.split(";")[0];
 
 	if(url.match(/https:\/\/imgur\.com\/(a\/)?(.+)/gi) && !url.includes("/embed")) { // Imgur embedding
-		let body = await (await fetch(`${url}/embed/`)).text();
+		let body = await (await fetch(`${url.replace("gallery/", "")}/embed/`)).text();
+		// Check for images
 		let sourceMatch = body.match(/<img id="image-element" class="post" src="(\/\/i\.imgur\.com\/.+.+)" \/>/);
 		if(sourceMatch && sourceMatch[1]) return `<img src="https:${sourceMatch[1]}" class="embed embedImage allowOpen" data-original="${url}">`;
+	
+		// Check for videos
+		let gifMatch = body.match(/gifUrl: +'(.+)'/);
+		if(gifMatch && gifMatch[1]) return `<img src="https:${gifMatch[1]}" class="embed embedImage allowOpen" data-original="${url}">`;
 	} 
 	
 	if(url.match(/https:\/\/giphy\.com\/gifs\//gi) || url.match(/https:\/\/giphy\.com\/stories\//gi) || url.match(/https:\/\/tenor\.com\/view\//gi) || url.match(/https:\/\/gfycat\.com\/(.+)/gi)) { // Giphy & tenor embedding
