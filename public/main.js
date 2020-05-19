@@ -7,6 +7,7 @@ let data = {
 	channels: [],
 	messages: []
 };
+let lastRoomData = [];
 let urlMatch = location.href.match(/\?r=(.+)/);
 let roomToken = urlMatch ? urlMatch[1] : null;
 let urlCache = {};
@@ -72,7 +73,16 @@ function getAuth() {
 
 function renderRooms() {
 	let wrapper = document.querySelector(".rooms");
+
+	// Prevent an empty list ruining everything
+	if(JSON.stringify(lastRoomData) === data.channels || data.channels.length < lastRoomData.length - 1) {
+		return;
+	}
+
 	wrapper.innerHTML = "";
+
+	lastRoomData = Object.assign(data.channels, []);
+
 	for (let room of data.channels) {
 		let node = document.importNode(document.querySelector("template.room").content, true).querySelector("*");
 
