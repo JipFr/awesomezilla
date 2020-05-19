@@ -390,6 +390,12 @@ aside {
 }
 
 /* Embeds */
+.embed.image, .embed .image, .embedImage, img.embed {
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	overflow: hidden;
+	display: block;
+}
 .urlEmbed {
 	padding: 10px;
 	border: 1px solid var(--border);
@@ -404,10 +410,6 @@ aside {
 }
 .urlEmbed .embedImage {
 	width: 100%;
-	border: 1px solid var(--border);
-	border-radius: 4px;
-	overflow: hidden;
-	display: block;
 }
 .embedVideo {
 	width: 300px;

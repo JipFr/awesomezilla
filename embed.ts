@@ -17,8 +17,10 @@ export async function getEmbed(url: string): Promise<string> {
 	});
 	let ct = embedReq.headers.get("content-type")?.split(";")[0];
 
-	if(url.match(/https:\/\/imgur\.com\/(a\/)?(.+)/gi)) { // Imgur embedding
-		return `<iframe src="${url.replace(/\/embed/g, "")}/embed" scrolling="no" class="embedFrame"></iframe>`
+	if(url.match(/https:\/\/imgur\.com\/(a\/)?(.+)/gi) && !url.includes("/embed")) { // Imgur embedding
+		let body = await (await fetch(`${url}/embed/`)).text();
+		let sourceMatch = body.match(/<img id="image-element" class="post" src="(\/\/i\.imgur\.com\/.+.+)" \/>/);
+		if(sourceMatch && sourceMatch[1]) return `<img src="https:${sourceMatch[1]}" class="embed embedImage allowOpen" data-original="${url}">`;
 	} 
 	
 	if(url.match(/https:\/\/giphy\.com\/gifs\//gi) || url.match(/https:\/\/giphy\.com\/stories\//gi) || url.match(/https:\/\/tenor\.com\/view\//gi) || url.match(/https:\/\/gfycat\.com\/(.+)/gi)) { // Giphy & tenor embedding
@@ -27,11 +29,11 @@ export async function getEmbed(url: string): Promise<string> {
 
 		let image;
 		if(headHtml) image = getProperty(headHtml, ["apple-touch-icon", "twitter:image:src", "og:image", "icon"]);
-		if(image) return `<img src="${image}" class="embed">`;
+		if(image) return `<img src="${image}" class="embed embedImage allowOpen" data-original="${url}">`;
 	} 
 	
 	if(url.match(/https:\/\/media(\d)?\.giphy\.com\/media\//gi)) { // media.giphy.com embedding
-		return `<img src="${url.replace(/\.webp/g, ".gif")}" class="embed">`;
+		return `<img src="${url.replace(/\.webp/g, ".gif")}" class="embed embedImage allowOpen" data-original="${url}">`;
 	} 
 	
 	if(url.match(/https:\/\/streamable\.com\/(.+)/gi)) {
@@ -106,7 +108,7 @@ export async function getEmbed(url: string): Promise<string> {
 		}
 	}
 	if(ct?.startsWith("image/")) { // Images, obviously
-		return `<img src="${url}" class="embed">`;
+		return `<img src="${url}" class="embed allowOpen" data-original="${url}">`;
 	}
 
 	return `<span class="embed noEmbed">No matched for ${url} with content-type ${ct}</span>`;
