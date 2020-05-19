@@ -7,12 +7,13 @@ let data = {
 	channels: [],
 	messages: []
 };
-let lastRoomData = [];
-let urlMatch = location.href.match(/\?r=(.+)/);
-let roomToken = urlMatch ? urlMatch[1] : null;
+let lastRoomData;
+let urlMatch;
+let roomToken;
 let urlCache = {};
-let peopleImgCache = {};
-let roomImageCache = {};
+peopleImgCache = {};
+roomImageCache = {};
+let loopIteration = 0;
 
 /**
  * Correct room image's source
@@ -95,7 +96,7 @@ function renderRooms() {
 		// Last message author & content
 		node.querySelector(".body .authorName").innerText = room.lastMessage.actorId !== atob(getAuth()).split(":")[0] ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
 		node.querySelector(".body .lastMessage").innerHTML = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage)[0]; // 200 for no real reason.
-		node.href = `?r=${room.token}`;
+		node.href = `#${room.token}`;
 		if (room.token === roomToken) {
 			node.classList.add("current");
 			document.querySelector("header .core .title .roomName").innerText = room.displayName || room.name;
@@ -306,8 +307,8 @@ async function updateData() {
 			since: lastTime
 		})
 	});
-	data.messages = data.messages.filter(msg => !msg.skeleton);
 	data = await dataReq.json();
+	console.log(data);
 }
 
 function getISO8601(d) {
@@ -401,12 +402,24 @@ async function searchGifs(searchTerm) {
 
 async function init() {
 
+	console.log("RUNNING INIT")
+	data.messages = [];
+	lastRoomData = [];
+	urlMatch = location.href.match(/\#(.+)/);
+	roomToken = urlMatch ? urlMatch[1] : null;
+
+	// Get rid of pre-existing message elements
+	document.querySelectorAll(".mainChat .message").forEach(el => el.remove());
+
+	// Set iOS attributes
 	document.body.setAttribute("data-is-ios", /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
 
+	// Update potentional sidebar width
 	if(localStorage.getItem("sidebarWidth") && document.body.getAttribute("data-is-ios") === "false") {
 		document.body.style.setProperty("--sidebarWidth", localStorage.getItem("sidebarWidth"));
 	}
 
+	// Generate skeleton messages
 	const ipsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed ddolor sit amet, consetetur sadipscing elitr,";
 	for (let i = 0; i < 20; i++) {
 		let index = Math.floor(Math.random() * ipsum.length);
@@ -424,11 +437,13 @@ async function init() {
 	}
 	renderChat();
 
+	// Listen for sidebar resizing
 	let sidebarObserver = new MutationObserver(storeSidebarWidth);
 	sidebarObserver.observe(document.querySelector("aside"), {
 		attributes: true
 	});
 
+	// Mobile back button
 	document.querySelector(".showSidebar").addEventListener("click", evt => {
 		if (document.body.dataset.focus === "aside") {
 			document.body.setAttribute("data-focus", "core");
@@ -438,20 +453,22 @@ async function init() {
 		}
 	});
 
+	// Send message eventlisteners
 	document.querySelector(".inputDiv .send").addEventListener("click", sendMessage);
 	document.querySelector(".messageBox").addEventListener("input", evt => {
 		toBottom();
 		checkCommands(evt.currentTarget);
 	});
-
 	document.querySelector(".messageBox").addEventListener("keyup", evt => {
 		if (evt.key === "Enter" && !evt.shiftKey) {
 			sendMessage();
 		}
 	});
 
-	loopMain(true); // It's init, so I'm passing true
+	// Start!
+	loopMain(true, loopIteration, roomToken); // It's init, so I'm passing true
 
+	// Set view to list if user is on mobile without focus
 	if(!roomToken) {
 		document.body.setAttribute("data-focus", "aside");
 		window.scrollTo(0, 0);
@@ -492,15 +509,27 @@ function sendMessage() {
 
 }
 
-function loopMain(init = false) {
-	main().then(() => {
-		if(init) document.body.classList.add("loaded");
-		setTimeout(loopMain, 3e3);
+function loopMain(isInit = false, iteration = loopIteration, token = roomToken) {
+	main(iteration).then(() => {
+		console.log(iteration, loopIteration);
+		if(loopIteration === iteration) {
+			if(isInit) document.body.classList.add("loaded");
+			setTimeout(() => {
+				if(roomToken === token && loopIteration === iteration) {
+					loopMain(false, iteration, token);
+				} else {
+					console.log("Quit looping", loopIteration, iteration);
+				}
+			}, 3e3);
+		}
 	});
 }
 
-async function main() {
+async function main(iteration) {
+	if(iteration !== loopIteration) return;
 	await updateData();
+	if(iteration !== loopIteration) return;
+	console.log(iteration, loopIteration);
 
 	// Remove all skeleton divs
 	document.querySelectorAll(`[data-is-skeleton="true"]`).forEach(el => el.remove());
@@ -513,3 +542,8 @@ async function main() {
 }
 
 init();
+window.addEventListener("hashchange", evt => {
+	console.log("Changed");
+	loopIteration++;
+	init();
+});

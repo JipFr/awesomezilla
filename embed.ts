@@ -18,7 +18,7 @@ export async function getEmbed(url: string): Promise<string> {
 	let ct = embedReq.headers.get("content-type")?.split(";")[0];
 
 	if(url.match(/https:\/\/imgur\.com\/(a\/)?(.+)/gi)) { // Imgur embedding
-		return `<iframe src="${url}/embed" scrolling="no" class="embedFrame"></iframe>`
+		// return `<iframe src="${url}/embed" scrolling="no" class="embedFrame"></iframe>`
 	} 
 	
 	if(url.match(/https:\/\/giphy\.com\/gifs\//gi) || url.match(/https:\/\/giphy\.com\/stories\//gi) || url.match(/https:\/\/tenor\.com\/view\//gi) || url.match(/https:\/\/gfycat\.com\/(.+)/gi)) { // Giphy & tenor embedding
@@ -102,7 +102,7 @@ export async function getEmbed(url: string): Promise<string> {
 		return `<img src="${url}" class="embed">`;
 	}
 
-	return `No matched for ${url} with content-type ${ct}`;
+	return `<span class="embed noEmbed">No matched for ${url} with content-type ${ct}</span>`;
 }
 
 /** Get propery from head HTML
