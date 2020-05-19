@@ -362,6 +362,9 @@ aside {
 	object-fit: contain;
 	display: block;
 }
+.frameEmbed {
+	max-width: 100%;
+}
 
 /* Skeleton messages */
 [data-is-skeleton="true"] .body > p[data-is-fake], [data-is-skeleton="true"] .title {
