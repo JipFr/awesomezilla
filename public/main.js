@@ -308,7 +308,6 @@ async function updateData() {
 		})
 	});
 	data = await dataReq.json();
-	console.log(data);
 }
 
 function getISO8601(d) {
@@ -408,8 +407,9 @@ async function init() {
 	urlMatch = location.href.match(/\#(.+)/);
 	roomToken = urlMatch ? urlMatch[1] : null;
 
-	// Get rid of pre-existing message elements
+	// Get rid of pre-existing message elements, clean up from previous hash
 	document.querySelectorAll(".mainChat .message").forEach(el => el.remove());
+	document.querySelector(".roomName").innerText = (data.channels.find(r => r.token === roomToken) || {}).displayName || "";
 
 	// Set iOS attributes
 	document.body.setAttribute("data-is-ios", /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
@@ -445,12 +445,8 @@ async function init() {
 
 	// Mobile back button
 	document.querySelector(".showSidebar").addEventListener("click", evt => {
-		if (document.body.dataset.focus === "aside") {
-			document.body.setAttribute("data-focus", "core");
-		} else {
-			document.body.setAttribute("data-focus", "aside");
-			window.scrollTo(0, 0);
-		}
+		document.body.setAttribute("data-focus", "aside");
+		window.scrollTo(0, 0);
 	});
 
 	// Send message eventlisteners
@@ -472,6 +468,9 @@ async function init() {
 	if(!roomToken) {
 		document.body.setAttribute("data-focus", "aside");
 		window.scrollTo(0, 0);
+	} else {
+		document.body.setAttribute("data-focus", "core");
+		toBottom();
 	}
 
 }
@@ -511,7 +510,6 @@ function sendMessage() {
 
 function loopMain(isInit = false, iteration = loopIteration, token = roomToken) {
 	main(iteration).then(() => {
-		console.log(iteration, loopIteration);
 		if(loopIteration === iteration) {
 			if(isInit) document.body.classList.add("loaded");
 			setTimeout(() => {
@@ -529,7 +527,6 @@ async function main(iteration) {
 	if(iteration !== loopIteration) return;
 	await updateData();
 	if(iteration !== loopIteration) return;
-	console.log(iteration, loopIteration);
 
 	// Remove all skeleton divs
 	document.querySelectorAll(`[data-is-skeleton="true"]`).forEach(el => el.remove());
