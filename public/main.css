@@ -467,7 +467,7 @@ pre code {
 	border-radius: 0;
 	border-top-right-radius: 6px;
 	border-bottom-right-radius: 6px;
-	border-left: 3px solid #B0B238;
+	border-left: 3px solid var(--main);
 	word-break: normal;
 }
 
@@ -498,6 +498,7 @@ pre code {
 	object-fit: contain;
 	border-radius: 4px;
 	border: 1px solid rgba(255, 255, 255, 0.5);
+	background: white;
 }
 .overlayWrapper a {
 	color: inherit;
