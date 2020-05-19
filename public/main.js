@@ -59,7 +59,6 @@ function correctImage(imgElement) {
 		}
 	}
 	imgElement.src = `/placeholderImage/300/${peopleImgCache[userId].bg}/fff?text=${peopleImgCache[userId].userName.slice(0, 1).toUpperCase()}`
-	// imgElement.src = `/static/img/u-not-found.png`;
 }
 
 function getAuth() {
@@ -234,6 +233,8 @@ function drawEmbeds() {
 					window.scrollTo(0, document.body.offsetHeight);
 				});
 			});
+			// Add event listener for clicking so that people can open the image in bigger size
+			updateAllowOpen();
 
 			// Check if URL is only content, remove if so
 			if((urlCache[a.href] || "").startsWith("<img")) {
@@ -255,8 +256,36 @@ function drawEmbeds() {
 		window.scrollTo(0, document.body.offsetHeight);
 	}
 
+	updateAllowOpen();
+
 }
 
+function updateAllowOpen() {
+	document.querySelectorAll(".allowOpen").forEach(el => {
+		el.addEventListener("click", evt => {
+			openImage(evt.currentTarget);
+		});
+	});
+}
+
+function openImage(imgElement) {
+	// Get rid of currently existing overlays
+	let all = document.querySelector(".all");
+	all.querySelectorAll(".overlayWrapper").forEach(overlay => overlay.remove());
+	
+	// Generate overlay
+	let overlay = document.importNode(document.querySelector("template.overlay").content, true).querySelector("*");
+	overlay.querySelector("img.mainImg").src = imgElement.src;
+	overlay.querySelector(".original").href = imgElement.getAttribute("data-original");
+
+	overlay.addEventListener("click", evt => {
+		if(!([...evt.path].includes(overlay.querySelector("*")))) {
+			document.querySelectorAll(".overlayWrapper").forEach(el => el.remove());
+		}
+	});
+	
+	all.appendChild(overlay);
+}
 
 function getMessageNode(message) {
 	let node = document.importNode(document.querySelector("template.message").content, true).querySelector("*");
@@ -293,7 +322,7 @@ function toBodyText(str, message) {
 			}
 		} else if(par[key].type === "file" && par[key].mimetype.startsWith("image")) {
 			let link = par[key].link;
-			let newStr = `<a href="${link}" target="_blank"><img class="embed" src="/image-preview/${par[key].id}?auth=${getAuth()}"></a>`;
+			let newStr = `<img class="embed allowOpen" src="/image-preview/${par[key].id}?auth=${getAuth()}" data-original="${link}"></a>`;
 			while (str.includes(replacingStr)) {
 				str = str.replace(replacingStr, newStr);
 			}
