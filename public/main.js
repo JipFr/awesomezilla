@@ -273,7 +273,6 @@ function toBodyText(str, message) {
 				str = str.replace(replacingStr, newStr);
 			}
 		} else if(par[key].type === "file" && par[key].mimetype.startsWith("image")) {
-			console.log(par[key], key, replacingStr);
 			let link = par[key].link;
 			let newStr = `<a href="${link}" target="_blank"><img class="embed" src="/image-preview/${par[key].id}?auth=${getAuth()}"></a>`;
 			while (str.includes(replacingStr)) {
