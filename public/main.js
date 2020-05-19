@@ -72,6 +72,7 @@ function getAuth() {
 	return localStorage.getItem("auth");
 }
 
+// Render all rooms in the sidebar
 function renderRooms() {
 	let wrapper = document.querySelector(".rooms");
 
@@ -119,6 +120,8 @@ function renderRooms() {
 
 	}
 }
+
+// Render all messages
 function renderChat() {
 	let shouldScroll = (window.innerHeight + window.scrollY) >= document.body.offsetHeight;
 	let wrapper = document.querySelector(".messages");
@@ -505,6 +508,7 @@ async function init() {
 
 }
 
+// Send what is currently in message box
 function sendMessage() {
 	let input = document.querySelector(".messageBox");
 	input.focus();
@@ -538,6 +542,7 @@ function sendMessage() {
 
 }
 
+// Main loop. Constantly runs the main function, getting new messages and such
 function loopMain(isInit = false, iteration = loopIteration, token = roomToken) {
 	main(iteration).then(() => {
 		if(loopIteration === iteration) {
