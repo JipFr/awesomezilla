@@ -143,6 +143,7 @@ aside {
 	position: relative;
 	z-index: 0;
 	padding: 8px 10px;
+	padding-left: 5px;
 	margin: 0 10px;
 	border-radius: 4px;
 	color: inherit;
@@ -150,7 +151,7 @@ aside {
 	display: grid;
 	align-items: center;
 	grid-template-columns: 40px 1fr;
-	grid-gap: 10px;
+	grid-gap: 15px;
 }
 .room img.roomImage {
 	width: 100%;
