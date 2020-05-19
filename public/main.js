@@ -213,7 +213,10 @@ function drawEmbeds() {
 	// Now actually add the nodes...
 	let links = [...document.querySelectorAll(".messages a")];
 	for (let a of links) {
+		// Check if div has not been rendered yet
 		if (!a.getAttribute("data-rendered-embed") && urlCache[a.href] && !a.closest(".urlEmbed")) {
+
+			// Get wrapper & Make sure there's an embed wrapper
 			let p = a.closest("p[data-id]");
 			if (!p.querySelector(".embedWrapper")) {
 				let div = document.createElement("div");
@@ -221,12 +224,23 @@ function drawEmbeds() {
 				p.appendChild(div);
 			}
 
+			// Add embeds
 			p.querySelector(".embedWrapper").innerHTML += urlCache[a.href] || "";
 			p.querySelectorAll(".embedWrapper img").forEach(el => {
 				el.addEventListener("load", () => {
 					window.scrollTo(0, document.body.offsetHeight);
 				});
-			})
+			});
+
+			// Check if URL is only content, remove if so
+			let textNode = document.importNode(p.querySelector("p"), true);
+
+			textNode.querySelectorAll(`a.doEmbed`).forEach(el => el.remove());
+
+			if(textNode.innerText.trim().length <= 0) {
+				p.querySelector("p").innerHTML = "";
+			}
+
 			a.setAttribute("data-rendered-embed", true);
 		}
 
@@ -294,7 +308,6 @@ function toBodyText(str, message) {
 		parent.outerHTML = `<div class="codeWrapper">${parent.outerHTML}</div>`
 
 	});
-
 
 	return [div.innerHTML, suffix];
 }

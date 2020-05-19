@@ -523,7 +523,7 @@ pre code {
 		height: 50px;
 	}
 	.message .body p[data-id] img.embed {
-		width: 100%;
+		max-width: 100%;
 	}
 	.mainChat .inputDiv .messageBox {
 		width: 100%;
