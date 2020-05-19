@@ -233,12 +233,14 @@ function drawEmbeds() {
 			});
 
 			// Check if URL is only content, remove if so
-			let textNode = document.importNode(p.querySelector("p"), true);
+			if((urlCache[a.href] || "").startsWith("<img")) {
+				let textNode = document.importNode(p.querySelector("p"), true);
 
-			textNode.querySelectorAll(`a.doEmbed`).forEach(el => el.remove());
+				textNode.querySelectorAll(`a.doEmbed`).forEach(el => el.remove());
 
-			if(textNode.innerText.trim().length <= 0) {
-				p.querySelector("p").innerHTML = "";
+				if(textNode.innerText.trim().length <= 0) {
+					p.querySelector("p").innerHTML = "";
+				}
 			}
 
 			a.setAttribute("data-rendered-embed", true);
