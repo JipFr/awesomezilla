@@ -460,7 +460,7 @@ function sendMessage() {
 	data.messages.push({
 		content: v,
 		author: {
-			id: atob(getAuth()).split(":")[0]
+			id: atob(getAuth()).split(":")[0].split("@")[0]
 		},
 		parameters: {},
 		timestamp: new Date(),
