@@ -267,8 +267,6 @@ function toBodyText(str, message) {
 		}
 	}
 
-	str = str.replace(/(\W|^)r\/([a-zA-Z]+)/g, `<a href="https://reddit.com/r/$1" class="link subreddit reddit" target="_blank">r/$1</a>`);
-
 	// We need a node for HLJS to highlight,
 	// so that's what we're doing.
 	let div = document.createElement("div");

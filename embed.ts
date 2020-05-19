@@ -21,7 +21,7 @@ export async function getEmbed(url: string): Promise<string> {
 		return `<iframe src="${url}/embed" scrolling="no" class="embedFrame"></iframe>`
 	} 
 	
-	if(url.match(/https:\/\/giphy\.com\/gifs\//gi) || url.match(/https:\/\/tenor\.com\/view\//gi) || url.match(/https:\/\/gfycat\.com\/(.+)/gi)) { // Giphy & tenor embedding
+	if(url.match(/https:\/\/giphy\.com\/gifs\//gi) || url.match(/https:\/\/giphy\.com\/stories\//gi) || url.match(/https:\/\/tenor\.com\/view\//gi) || url.match(/https:\/\/gfycat\.com\/(.+)/gi)) { // Giphy & tenor embedding
 		let html = await embedReq.text();
 		let headHtml = getHeadHtml(html);
 

@@ -234,6 +234,8 @@ aside {
 	padding: 15px 0px;
 	box-sizing: border-box;
 	position: relative;
+}
+.mainChat .inputDiv .messageBox, .mainChat .inputDiv .messageBox > * {
 	word-break: break-word;
 }
 .messageBox[placeholder]:empty::before {
@@ -357,6 +359,7 @@ aside {
 	max-width: 300px;
 	max-height: 500px;
 	object-fit: contain;
+	display: block;
 }
 
 /* Skeleton messages */
