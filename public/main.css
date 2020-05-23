@@ -245,7 +245,7 @@ aside {
 	border-top: 1px solid var(--border);
 	padding-bottom: env(safe-area-inset-bottom);
 	box-sizing: border-box;
-	z-index: 60;
+	z-index: 30;
 }
 .mainChat .inputDiv .inputDivContent {
 	display: grid;
