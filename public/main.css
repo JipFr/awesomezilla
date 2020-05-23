@@ -331,6 +331,7 @@ aside {
 	top: calc(50px + 1px + env(safe-area-inset-top));
 	background: var(--body);
 	z-index: 30;
+	width: calc(100% + 2px);
 }
 .dateDivider hr {
 	margin-bottom: 0;
