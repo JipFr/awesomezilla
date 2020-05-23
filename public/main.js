@@ -112,6 +112,10 @@ function renderRooms() {
 		if (room.unreadMention) node.classList.add("unreadMention");
 		if(room.isFavorite) node.classList.add("favorite");
 
+		node.addEventListener("click", evt => {
+			document.body.setAttribute("data-focus", "core");
+		});
+
 		wrapper.appendChild(node);
 
 		// HR
@@ -179,9 +183,7 @@ function renderChat() {
 	}
 
 
-	if (shouldScroll) {
-		window.scrollTo(0, document.body.offsetHeight);
-	}
+	if (shouldScroll) toBottom();
 
 	updateEmbeds();
 
@@ -230,7 +232,7 @@ function drawEmbeds() {
 			p.querySelector(".embedWrapper").innerHTML += urlCache[a.href] || "";
 			p.querySelectorAll(".embedWrapper img").forEach(el => {
 				el.addEventListener("load", () => {
-					window.scrollTo(0, document.body.offsetHeight);
+					toBottom();
 				});
 			});
 			// Add event listener for clicking so that people can open the image in bigger size
@@ -377,7 +379,12 @@ function getISO8601(d) {
 }
 
 function toBottom() {
-	window.scrollTo(0, document.body.offsetHeight);
+	if(document.body.dataset.focus === "core") {
+		window.scrollTo(0, document.body.offsetHeight);
+	} else {
+		// Sidebar
+		window.scrollTo(0, 0);
+	}
 }
 
 // This is fired by the MutationObserver
