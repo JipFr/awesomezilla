@@ -63,7 +63,6 @@ body {
 	margin-top: 50px;
 	--inputHeight: 50px;
 	-webkit-text-size-adjust: 100%;
-	min-height: calc(100vh - var(--inputHeight));
 }
 
 .sidebarWidth {
