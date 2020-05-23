@@ -7,6 +7,7 @@ let data = {
 	channels: [],
 	messages: []
 };
+const months = ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
 let lastRoomData;
 let urlMatch;
 let roomToken;
@@ -147,12 +148,16 @@ function renderChat() {
 		let divs = [...document.querySelectorAll(".messages > *")];
 
 		let lastDate = divs.length > 0 ? divs.pop().getAttribute("data-iso-8601") : "-1";
-		let msgDate = getISO8601(new Date(message.timestamp));
-		if (lastDate !== msgDate && lastDate) {
+		let date = new Date(message.timestamp);
+		let msgDate = getISO8601(date);
+		if (lastDate !== msgDate && lastDate && date.getTime() > 0) {
 			let hr = document.createElement("div");
 			hr.classList.add("dateDivider")
+
+			let formattedStr = `${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
+
 			hr.innerHTML = `
-				<p class="dateString">${msgDate}</p>
+				<p class="dateString">${formattedStr}</p>
 				<hr>
 			`;
 			wrapper.appendChild(hr);
@@ -161,7 +166,7 @@ function renderChat() {
 		// Update divs variable with the new HR
 		divs = [...document.querySelectorAll(".messages > *")];
 
-		if (divs.length > 0 && divs[divs.length - 1].getAttribute("data-user") !== message.author.id) {
+		if (divs.length === 0 || (divs.length > 0 && divs[divs.length - 1].getAttribute("data-user") !== message.author.id)) {
 			let node = getMessageNode(message);
 			node.setAttribute("data-is-skeleton", !!message.skeleton);
 
@@ -495,7 +500,7 @@ async function init() {
 				id: "fake.person" + "0".repeat(random)
 			},
 			parameters: {},
-			timestamp: new Date(),
+			timestamp: new Date(0),
 			fake: true,
 			skeleton: true
 		});
@@ -582,8 +587,6 @@ function loopMain(isInit = false, iteration = loopIteration, token = roomToken) 
 			setTimeout(() => {
 				if(roomToken === token && loopIteration === iteration) {
 					loopMain(false, iteration, token);
-				} else {
-					console.log("Quit looping", loopIteration, iteration);
 				}
 			}, 3e3);
 		}
@@ -608,7 +611,6 @@ async function main(iteration) {
 
 init();
 window.addEventListener("hashchange", evt => {
-	console.log("Changed");
 	loopIteration++;
 	init();
 });
