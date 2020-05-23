@@ -526,6 +526,7 @@ async function init() {
 	// Send message eventlisteners
 	document.querySelector(".inputDiv .send").addEventListener("click", sendMessage);
 	document.querySelector(".messageBox").addEventListener("input", evt => {
+		document.body.style.setProperty("--inputHeight", (evt.currentTarget.scrollHeight + 2) + "px");
 		toBottom();
 		checkCommands(evt.currentTarget);
 	});
