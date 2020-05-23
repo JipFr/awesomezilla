@@ -245,6 +245,7 @@ aside {
 	border-top: 1px solid var(--border);
 	padding-bottom: env(safe-area-inset-bottom);
 	box-sizing: border-box;
+	z-index: 60;
 }
 .mainChat .inputDiv .inputDivContent {
 	display: grid;
@@ -329,7 +330,7 @@ aside {
 	position: sticky;
 	top: calc(50px + 1px + env(safe-area-inset-top));
 	background: var(--body);
-	z-index: 99;
+	z-index: 30;
 }
 .dateDivider hr {
 	margin-bottom: 0;
