@@ -158,10 +158,7 @@ function renderChat() {
 
 			let formattedStr = `${days[date.getDay()]}, ${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
 
-			hr.innerHTML = `
-				<p class="dateString">${formattedStr}</p>
-				<hr>
-			`;
+			hr.innerHTML = `<p class="dateString">${formattedStr}</p>`;
 			wrapper.appendChild(hr);
 		}
 

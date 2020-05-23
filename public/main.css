@@ -332,6 +332,7 @@ aside {
 	background: var(--body);
 	z-index: 30;
 	width: calc(100% + 2px);
+	border-bottom: 1px solid var(--border);
 }
 .dateDivider p {
 	margin: 13px 0;
@@ -588,6 +589,13 @@ pre code {
 	.room img.roomImage {
 		height: 50px;
 	}
+
+	.dateDivider {
+		padding-left: 5vw;
+		padding-right: 5vw;
+		margin-left: -5vw;
+	}
+
 	.message .body p[data-id] img.embed {
 		max-width: 100%;
 	}
