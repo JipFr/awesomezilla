@@ -7,6 +7,7 @@ let data = {
 	channels: [],
 	messages: []
 };
+const days = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];
 const months = ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
 let lastRoomData;
 let urlMatch;
@@ -154,7 +155,7 @@ function renderChat() {
 			let hr = document.createElement("div");
 			hr.classList.add("dateDivider")
 
-			let formattedStr = `${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
+			let formattedStr = `${days[date.getDay()]}, ${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
 
 			hr.innerHTML = `
 				<p class="dateString">${formattedStr}</p>
