@@ -150,6 +150,7 @@ function renderChat() {
 		let msgDate = getISO8601(new Date(message.timestamp));
 		if (lastDate !== msgDate && lastDate) {
 			let hr = document.createElement("div");
+			hr.classList.add("dateDivider")
 			hr.innerHTML = `
 				<p class="dateString">${msgDate}</p>
 				<hr>
