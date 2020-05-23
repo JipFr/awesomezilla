@@ -164,7 +164,3 @@ app.get("/placeholderImage/:resolution/:colorA/:colorB", async (ctx) => {
 
 await app.start({ port: 8081 });
 console.log("Started!");
-
-Deno.run({
-	cmd:[ `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`, `--app=http://localhost:8081`]
-})
