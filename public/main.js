@@ -379,12 +379,7 @@ function getISO8601(d) {
 }
 
 function toBottom() {
-	if(document.body.dataset.focus === "core") {
-		window.scrollTo(0, document.body.offsetHeight);
-	} else {
-		// Sidebar
-		window.scrollTo(0, 0);
-	}
+	if(document.body.dataset.focus === "core") window.scrollTo(0, document.body.offsetHeight);
 }
 
 // This is fired by the MutationObserver
