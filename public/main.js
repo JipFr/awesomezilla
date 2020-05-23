@@ -116,6 +116,7 @@ function renderRooms() {
 
 		node.addEventListener("click", evt => {
 			document.body.setAttribute("data-focus", "core");
+			toBottom();
 		});
 
 		wrapper.appendChild(node);
@@ -339,6 +340,8 @@ function toBodyText(str, message) {
 			console.log(par[key]);
 		}
 	}
+
+	str = str.replace(/\br\/([a-zA-Z0-9-_]*)/g, `<a class="subreddit" href="https://reddit.com/r/$1/">r/$1</a>`)
 
 	// We need a node for HLJS to highlight,
 	// so that's what we're doing.

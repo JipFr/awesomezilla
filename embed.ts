@@ -1,11 +1,4 @@
 
-/** Get HEAD html from HTML string */
-function getHeadHtml(html: string) {
-	let headHtml;
-	let headStart = html.split(/\<head ?([\n\t ]+)?(.+)?\>/).filter(i => i && i.includes("<"))[1];
-	if(headStart) headHtml = headStart ? headStart.split("</head>")[0] : null;
-	return headHtml ?? "";	
-}
 
 /** Get HTML embed from URL */
 export async function getEmbed(url: string): Promise<string> {
@@ -116,7 +109,21 @@ export async function getEmbed(url: string): Promise<string> {
 		return `<img src="${url}" class="embed allowOpen" data-original="${url}">`;
 	}
 
+	let html = await embedReq.text();
+	let headHtml = getHeadHtml(html);
+
+	let image;
+	console.log(headHtml);
+
 	return `<span class="embed noEmbed">No matched for ${url} with content-type ${ct}</span>`;
+}
+
+/** Get HEAD html from HTML string */
+function getHeadHtml(html: string) {
+	let headHtml;
+	let headStart = html.split(/\<head ?([\n\t ]+)?(.+)?\>/).filter(i => i && i.includes("<")).slice(1).join("");
+	if(headStart) headHtml = headStart ? headStart.split("</head>")[0] : null;
+	return headHtml ?? "";	
 }
 
 /** Get propery from head HTML
