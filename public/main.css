@@ -333,6 +333,9 @@ aside {
 	z-index: 30;
 	width: calc(100% + 2px);
 }
+.dateDivider p {
+	margin: 13px 0;
+}
 .dateDivider hr {
 	margin-bottom: 0;
 }
