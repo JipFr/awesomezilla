@@ -380,6 +380,7 @@ async function updateData() {
 			})
 		});
 		data = await dataReq.json();
+		document.body.setAttribute("data-disconnected", false);
 	} catch(err) {
 		// Failed to connect for some reason
 		document.body.setAttribute("data-disconnected", true);
