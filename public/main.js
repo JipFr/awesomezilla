@@ -7,6 +7,7 @@ let data = {
 	channels: [],
 	messages: []
 };
+const emptyPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 const days = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];
 const months = ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
 let lastRoomData;
@@ -46,7 +47,7 @@ if (sw && navigator.onLine) {
 function correctRoomImage(imgElement) {
 	let wrapper = imgElement.closest("[data-token]");
 	let token = wrapper.dataset.token;
-	roomImageCache[token] = navigator.onLine ? "/img/group.png" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+	roomImageCache[token] = navigator.onLine ? "/img/group.png" : emptyPixel;
 	imgElement.src = roomImageCache[token];
 }
 
@@ -82,7 +83,7 @@ function correctImage(imgElement) {
 			userName: imgElement.closest(".message").querySelector(".name").innerText
 		}
 	}
-	imgElement.src = navigator.onLine ? `/placeholderImage/300/${peopleImgCache[userId].bg}/fff?text=${peopleImgCache[userId].userName.slice(0, 1).toUpperCase()}` : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+	imgElement.src = navigator.onLine ? `/placeholderImage/300/${peopleImgCache[userId].bg}/fff?text=${peopleImgCache[userId].userName.slice(0, 1).toUpperCase()}` : emptyPixel;
 }
 
 function getAuth() {
@@ -115,7 +116,7 @@ function renderRooms() {
 		let roomName = parseRoomName(room.displayName || room.name);
 		
 		// Room's image
-		node.querySelector(".roomImage").src = roomImageCache[room.token] || `/image/${room.name}?auth=${getAuth()}`;
+		node.querySelector(".roomImage").src = navigator.onLine ? roomImageCache[room.token] || `/image/${room.name}?auth=${getAuth()}` : emptyPixel;
 		
 		// Channel's name, say "Embed preview" or "Jip BOT"
 		node.querySelector(".channelName").innerText = room.displayName || room.name;
@@ -167,46 +168,62 @@ function renderChat() {
 		});
 	}
 
-	for (let message of data.messages) {
+	document.querySelector(".roomName").classList.remove("noName");
+	if(navigator.onLine) {
+		for (let message of data.messages) {
 
-		let divs = [...document.querySelectorAll(".messages > *")];
-
-		let lastDate = divs.length > 0 ? divs.pop().getAttribute("data-iso-8601") : "-1";
-		let date = new Date(message.timestamp);
-		let msgDate = getISO8601(date);
-		if (lastDate !== msgDate && lastDate && date.getTime() > 0) {
-			let hr = document.createElement("div");
-			hr.classList.add("dateDivider")
-
-			let formattedStr = `${days[date.getDay()]}, ${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
-
-			hr.innerHTML = `<p class="dateString">${formattedStr}</p>`;
-			wrapper.appendChild(hr);
+			let divs = [...document.querySelectorAll(".messages > *")];
+	
+			let lastDate = divs.length > 0 ? divs.pop().getAttribute("data-iso-8601") : "-1";
+			let date = new Date(message.timestamp);
+			let msgDate = getISO8601(date);
+			if (lastDate !== msgDate && lastDate && date.getTime() > 0) {
+				let hr = document.createElement("div");
+				hr.classList.add("dateDivider")
+	
+				let formattedStr = `${days[date.getDay()]}, ${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
+	
+				hr.innerHTML = `<p class="dateString">${formattedStr}</p>`;
+				wrapper.appendChild(hr);
+			}
+	
+			// Update divs variable with the new HR
+			divs = [...document.querySelectorAll(".messages > *")];
+	
+			if (divs.length === 0 || (divs.length > 0 && divs[divs.length - 1].getAttribute("data-user") !== message.author.id)) {
+				let node = getMessageNode(message);
+				node.setAttribute("data-is-skeleton", !!message.skeleton);
+	
+				// Now add it to the DOM
+				wrapper.appendChild(node);
+			}
+	
+			// Update the divs _again_
+			divs = [...document.querySelectorAll(".messages > *")];
+	
+			// Instead of doing the name & profile picture again,
+			// add another paragraph.
+			let p = document.createElement("p");
+			let msg = toBodyText(message.content, message);
+			p.innerHTML = msg[0];
+			p.setAttribute("data-id", message.id);
+			p.setAttribute("data-is-fake", !!message.fake);
+			divs.pop().querySelector(".messageCore .body").appendChild(p);
+	
 		}
+	} else {
+		// Display offline alert
+		let kaomoji = ["(ノ_<。)","(-_-)","(´-ω-`)",".･ﾟﾟ･(／ω＼)･ﾟﾟ･.","(μ_μ)","(ﾉД`)","(-ω-、)","。゜゜(´Ｏ`) ゜゜。","o(TヘTo)","( ; ω ; )","(｡╯︵╰｡)","｡･ﾟﾟ*(>д<)*ﾟﾟ･｡","( ﾟ，_ゝ｀)","(个_个)","(╯︵╰,)","｡･ﾟ(ﾟ><ﾟ)ﾟ･｡","( ╥ω╥ )","(╯_╰)","(╥_╥)",".｡･ﾟﾟ･(＞_＜)･ﾟﾟ･｡.","(／ˍ・、)","(ノ_<、)","(╥﹏╥)","｡ﾟ(｡ﾉωヽ｡)ﾟ｡","(つω`｡)","(｡T ω T｡)","(ﾉω･､)","･ﾟ･(｡>ω<｡)･ﾟ･","(T_T)","(>_<)","(っ˘̩╭╮˘̩)っ","｡ﾟ･ (>﹏<) ･ﾟ｡","o(〒﹏〒)o","(｡•́︿•̀｡)","(ಥ﹏ಥ)"];
 
-		// Update divs variable with the new HR
-		divs = [...document.querySelectorAll(".messages > *")];
+		if(document.querySelector(".roomName").innerText.trim().length === 0) document.querySelector(".roomName").classList.add("noName");
 
-		if (divs.length === 0 || (divs.length > 0 && divs[divs.length - 1].getAttribute("data-user") !== message.author.id)) {
-			let node = getMessageNode(message);
-			node.setAttribute("data-is-skeleton", !!message.skeleton);
-
-			// Now add it to the DOM
-			wrapper.appendChild(node);
-		}
-
-		// Update the divs _again_
-		divs = [...document.querySelectorAll(".messages > *")];
-
-		// Instead of doing the name & profile picture again,
-		// add another paragraph.
-		let p = document.createElement("p");
-		let msg = toBodyText(message.content, message);
-		p.innerHTML = msg[0];
-		p.setAttribute("data-id", message.id);
-		p.setAttribute("data-is-fake", !!message.fake);
-		divs.pop().querySelector(".messageCore .body").appendChild(p);
-
+		wrapper.innerHTML = `
+		<div class="offline">
+			<h2 class="title">${kaomoji[Math.floor(Math.random() * kaomoji.length)]}</h2>
+			<h2 class="title">You're offline!</h2>
+			<p class="body">Fix your connection in order to read more messages!</p>
+		</div>
+		`;
 	}
 
 
@@ -326,7 +343,7 @@ function getMessageNode(message) {
 	node.querySelector(".name").textContent = authorName !== "Unknown factor" ? authorName : "Unknown user";
 	node.querySelector(".time").textContent = `${message.date.getHours().toString().padStart(2, "0")}:${message.date.getMinutes().toString().padStart(2, "0")}`;
 
-	node.querySelector(".authorImg").src = `/image/${message.author.id}?auth=${getAuth()}`
+	node.querySelector(".authorImg").src = navigator.onLine ? `/image/${message.author.id}?auth=${getAuth()}` : emptyPixel;
 
 	return node;
 }
@@ -390,19 +407,23 @@ async function updateData() {
 	}
 
 	try {
-		let dataReq = await fetch(`${projectOpts.protocol}://${projectOpts.rootUrl}/getData`, {
-			method: "POST",
-			headers: {
-				"content-type": "application/json"
-			},
-			body: JSON.stringify({
-				room: roomToken,
-				auth: getAuth(),
-				since: lastTime
-			})
-		});
-		data = await dataReq.json();
-		document.body.setAttribute("data-disconnected", false);
+		if(navigator.onLine) {
+			let dataReq = await fetch(`${projectOpts.protocol}://${projectOpts.rootUrl}/getData`, {
+				method: "POST",
+				headers: {
+					"content-type": "application/json"
+				},
+				body: JSON.stringify({
+					room: roomToken,
+					auth: getAuth(),
+					since: lastTime
+				})
+			});
+			data = await dataReq.json();
+			document.body.setAttribute("data-disconnected", false);
+		} else {
+			document.body.setAttribute("data-disconnected", true);
+		}
 	} catch(err) {
 		// Failed to connect for some reason
 		document.body.setAttribute("data-disconnected", true);

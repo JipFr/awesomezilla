@@ -3,7 +3,10 @@ const urlsToCache = [
 	"/",
 	"/main.css",
 	"/main.js",
-	"/assets/atom-one-light.css"
+	"/assets/atom-one-light.css",
+	"/manifest.json",
+	"/icon.png",
+	"/icon@2x.png"
 ];
 
 self.addEventListener("install", e => {

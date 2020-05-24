@@ -102,6 +102,9 @@ header {
 [data-disconnected="true"] header .roomName::after {
 	content: " - disconnected";
 }
+[data-disconnected="true"] header .roomName.noName::after {
+	content: "Disconnected";
+}
 header .showSidebar {
 	display: none;
 	color: var(--headerArrow);
@@ -345,6 +348,16 @@ aside {
 .dateDivider hr {
 	margin-bottom: 0;
 }
+
+.offline {
+	padding: 0 40px;
+	text-align: center;
+}
+.offline .title, .offline .body {
+	margin: 0;
+	margin-top: 10px;
+}
+
 .message {
 	display: grid;
 	grid-template-columns: 40px 1fr;
