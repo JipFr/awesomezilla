@@ -367,18 +367,23 @@ async function updateData() {
 		lastTime = Number(messages.pop().dataset.timestamp);
 	}
 
-	let dataReq = await fetch(`${projectOpts.protocol}://${projectOpts.rootUrl}/getData`, {
-		method: "POST",
-		headers: {
-			"content-type": "application/json"
-		},
-		body: JSON.stringify({
-			room: roomToken,
-			auth: getAuth(),
-			since: lastTime
-		})
-	});
-	data = await dataReq.json();
+	try {
+		let dataReq = await fetch(`${projectOpts.protocol}://${projectOpts.rootUrl}/getData`, {
+			method: "POST",
+			headers: {
+				"content-type": "application/json"
+			},
+			body: JSON.stringify({
+				room: roomToken,
+				auth: getAuth(),
+				since: lastTime
+			})
+		});
+		data = await dataReq.json();
+	} catch(err) {
+		// Failed to connect for some reason
+		document.body.setAttribute("data-disconnected", true);
+	}
 }
 
 function getISO8601(d) {

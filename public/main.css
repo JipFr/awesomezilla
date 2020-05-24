@@ -96,6 +96,12 @@ header {
 [data-is-ios="false"] header {
 	border-top-color: rgba(0, 0, 0, 0.1);
 }
+[data-disconnected="true"] header {
+	background: rgb(109, 0, 0);
+}
+[data-disconnected="true"] header .roomName::after {
+	content: " - disconnected";
+}
 header .showSidebar {
 	display: none;
 	color: var(--headerArrow);
@@ -593,6 +599,7 @@ pre code {
 		padding-left: 5vw;
 		margin-left: -5vw;
 		width: calc(100% + 4vw + 3px); /* :? */
+		max-width: calc(100vw - 4vw);
 	}
 
 	.message .body p[data-id] img.embed {
