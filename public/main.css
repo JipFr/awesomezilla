@@ -331,7 +331,6 @@ aside {
 	top: calc(50px + 1px + env(safe-area-inset-top));
 	background: var(--body);
 	z-index: 30;
-	width: calc(100% + 2px);
 	border-bottom: 1px solid var(--border);
 }
 .dateDivider p {
@@ -592,8 +591,8 @@ pre code {
 
 	.dateDivider {
 		padding-left: 5vw;
-		padding-right: 5vw;
 		margin-left: -5vw;
+		width: calc(100% + 4vw + 3px); /* :? */
 	}
 
 	.message .body p[data-id] img.embed {
