@@ -1,0 +1,19 @@
+{
+	"name": "Awesomezilla",
+	"short_name": "AZ",
+	"lang": "en",
+	"display": "standalone",
+	"theme_color": "#485acf",
+	"background_color": "#485acf",
+	"start_url": "/",
+	"icons": [
+		{
+			"sizes": "75x75",
+			"src": "/icon.png"
+		},
+		{
+			"sizes": "150x150",
+			"src": "/icon@2x.png"
+		}
+	]
+}

@@ -1,4 +1,4 @@
-import { Application, Context } from "https://deno.land/x/abc@v1.0.0-rc5/mod.ts";
+import { Application, Context } from "https://deno.land/x/abc@v1.0.0-rc8/mod.ts";
 import { renderFile } from "https://deno.land/x/dejs/mod.ts";
 import { Client, Message, Channel } from "https://deno.land/x/talk_lib/mod.ts"
 import { Parser, HtmlRenderer } from "https://cdn.pika.dev/commonmark@0.29.1"
@@ -101,7 +101,7 @@ app.post("/postMessage", async (ctx: Context) => {
 	}
 });
 
-app.static("/static", "public");
+app.static("/", "public");
 
 /** Get Client object based on user's authentication */
 async function getClient(auth: string) {
@@ -160,7 +160,7 @@ app.get("/placeholderImage/:resolution/:colorA/:colorB", async (ctx) => {
 	let buffer = await avatarReq.arrayBuffer();
 	let arr = new Uint8Array(buffer);
 	return arr;
-})
+});
 
 await app.start({ port: 8081 });
 console.log("Started!");

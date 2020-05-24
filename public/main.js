@@ -17,6 +17,28 @@ peopleImgCache = {};
 roomImageCache = {};
 let loopIteration = 0;
 
+// Install service worker
+const sw = true;
+if (sw && navigator.onLine) {
+	if ("serviceWorker" in navigator) {
+		window.addEventListener("load", function() {
+			navigator.serviceWorker.register("sw.js").then(function(reg) {
+			}, function(err) {
+				console.log(err);
+			});
+		});
+	}
+} else if (!sw && navigator.onLine) {
+	if ("serviceWorker" in navigator) {
+		navigator.serviceWorker.getRegistrations().then(function(registrations) {
+			for (var registration of registrations) {
+				registration.unregister();
+			}
+		});
+	}
+}
+
+
 /**
  * Correct room image's source
  * @param imgElement <img> element
@@ -24,7 +46,7 @@ let loopIteration = 0;
 function correctRoomImage(imgElement) {
 	let wrapper = imgElement.closest("[data-token]");
 	let token = wrapper.dataset.token;
-	roomImageCache[token] = "/static/img/group.png"
+	roomImageCache[token] = navigator.onLine ? "/img/group.png" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 	imgElement.src = roomImageCache[token];
 }
 
@@ -60,7 +82,7 @@ function correctImage(imgElement) {
 			userName: imgElement.closest(".message").querySelector(".name").innerText
 		}
 	}
-	imgElement.src = `/placeholderImage/300/${peopleImgCache[userId].bg}/fff?text=${peopleImgCache[userId].userName.slice(0, 1).toUpperCase()}`
+	imgElement.src = navigator.onLine ? `/placeholderImage/300/${peopleImgCache[userId].bg}/fff?text=${peopleImgCache[userId].userName.slice(0, 1).toUpperCase()}` : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 }
 
 function getAuth() {
