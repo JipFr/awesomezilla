@@ -117,18 +117,67 @@ header .left {
 	height: 100%;
 	font-size: 1.5rem;
 	background: rgba(0, 0, 0, 0.1);
-}
-header .core {
-	padding: 0 20px;
-}
-header .core .title {
-	margin: 0;
 	display: flex;
 	align-items: center;
 }
-header .core .title .roomHashtag {
-	opacity: .8;
-	margin-left: 20px;
+header .left .padded {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 24px;
+	grid-template-areas: "text options";
+	grid-gap: 10px;
+	justify-content: flex-start;
+}
+header .left .padded .title {
+	width: 100%;
+	display: block;
+	grid-area: text;
+}
+header .left .options {
+	font-size: 1rem;
+	grid-area: options;
+}
+header .left .options {
+	position: relative;
+}
+header .left .options .dropdown {
+	width: 250px;
+	position: absolute;
+	top: 100%;
+	right: 0;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	background: var(--body);
+}
+.dropdown .item {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-gap: 10px;
+	color: var(--text);
+	padding: 10px 15px;
+	align-items: center;
+	cursor: pointer;
+}
+.dropdown .item + .item {
+	border-top: 1px solid var(--border);
+}
+.dropdown .item:hover {
+	background: var(--bodyHarsh);
+}
+header .left .options svg {
+	display: block;
+}
+details summary::-webkit-details-marker {
+	display:none;
+}
+header .padded {
+	padding: 0 20px;
+}
+header .title {
+	margin: 0;
+	display: flex;
+	align-items: center;
+	font-size: 1.17rem;
 }
 
 aside {
@@ -641,8 +690,16 @@ body[data-signed-in="false"] .authOverlay {
 		display: none;
 	}
 
-	header .left {
+	[data-focus="core"] header .left {
 		display: none;
+	}
+	header .left .padded {
+		grid-template-columns: 24px 1fr 24px;
+		grid-template-areas: ". text options";
+		text-align: center;
+	}
+	header .left {
+		background: transparent;
 	}
 	[data-is-ios="true"] header .core .title {
 		display: grid;

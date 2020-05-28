@@ -15,6 +15,7 @@
 		<script>hljs.initHighlightingOnLoad();</script>
 	</head>
 	<body data-focus="core">
+
 		<div class="templates" style="display: none;">
 			<template class="room">
 				<a class="room">
@@ -49,6 +50,7 @@
 				</div>
 			</template>
 		</div>
+
 		<div class="authOverlay">
 			<div class="authWrapper">
 				<img src="/icon.png" class="logo">
@@ -66,12 +68,27 @@
 				</form>
 			</div>
 		</div>
+
 		<div class="all">
+			
 			<header class="mainLayout">
 				<div class="left sidebarWidth">
-					
+					<div class="padded">
+						<h3 class="title">Awesomezilla</h3>
+						<details class="options">
+							<summary>
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+							</summary>	
+							<div class="dropdown">
+								<div class="item">
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+									<span>Log out</span>
+								</div>
+							</div>					
+						</details>
+					</div>
 				</div>
-				<div class="core">
+				<div class="core padded">
 					<h3 class="title">
 						<div class="showSidebar">
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -81,12 +98,15 @@
 					</h3>
 				</div>
 			</header>
+
 			<div class="bodyWrapper mainLayout">
+				
 				<aside class="sidebar sidebarWidth">
 					<div class="rooms">
 
 					</div>
 				</aside>
+
 				<div class="core">
 					<div class="mainChat">
 						<div class="messages"></div>
@@ -101,6 +121,7 @@
 						</div>
 					</div>
 				</div>
+
 			</div>
 		</div>
 		<script src="/main.js"></script>
