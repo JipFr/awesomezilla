@@ -141,7 +141,9 @@ header .left .options {
 	position: relative;
 }
 header .left .options .dropdown {
-	width: 250px;
+	min-width: 150px;
+	width: 100%;
+	max-width: 250px;
 	position: absolute;
 	top: 100%;
 	right: 0;
