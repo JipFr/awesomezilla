@@ -20,7 +20,7 @@ self.addEventListener("install", e => {
 self.addEventListener("fetch", e => {
 	e.respondWith(
 		caches.match(e.request).then(response => {
-			return response ? response : fetch(e.request);
+			return navigator.onLine ? fetch(e.request) : response;
 		})
 	);
 });

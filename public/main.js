@@ -372,7 +372,17 @@ function toBodyText(str, message) {
 			while (str.includes(replacingStr)) {
 				str = str.replace(replacingStr, newStr);
 			}
+		} else if(par[key].type == "file") {
+			// Replace file params with URLs to file.
+			// URL preview embeds should take care of this one.
+			let link = par[key].link;
+			let newStr = `<strong>File:</strong> <a class="link fileLink" href="${link}" target="_blank">${link}</a>`;
+			console.log(replacingStr);
+			while(str.includes(replacingStr)) {
+				str = str.replace(replacingStr, newStr);
+			}
 		} else {
+			console.log(key);
 			console.log(par[key]);
 		}
 	}
