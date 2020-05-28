@@ -135,7 +135,7 @@ function renderRooms() {
 		let lastActor = room.lastMessage.actorId !== getUserId() ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
 		node.querySelector(".body .authorName").innerText = lastActor;
 		
-		let lastMessage = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage, "aside")[0]; // 200 for no real reason.
+		let lastMessage = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage, "aside"); // 200 for no real reason.
 		if(lastMessage.startsWith("<img")) lastMessage = `${lastActor} sent an image`;
 		
 		node.querySelector(".body .lastMessage").innerHTML = lastMessage;
@@ -219,7 +219,7 @@ function renderChat() {
 			// add another paragraph.
 			let p = document.createElement("p");
 			let msg = toBodyText(message.content, message, "core");
-			p.innerHTML = msg[0];
+			p.innerHTML = msg;
 			p.setAttribute("data-id", message.id);
 			p.setAttribute("data-is-fake", !!message.fake);
 			divs.pop().querySelector(".messageCore .body").appendChild(p);
@@ -363,7 +363,6 @@ function getMessageNode(message) {
 }
 
 function toBodyText(str, message, section) {
-	let suffix = "";
 	// Match & replace URLs
 	let urlRegex = /(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g;
 	let urlMatch = str.match(urlRegex);
@@ -431,7 +430,9 @@ function toBodyText(str, message, section) {
 		str = str.replace(/\n/g, " ");
 	}
 
-	return [str, suffix];
+	str = str.replace(/\n/g, "<br>");
+
+	return str;
 }
 
 async function updateData() {
