@@ -113,7 +113,6 @@ function renderRooms() {
 		let node = document.importNode(document.querySelector("template.room").content, true).querySelector("*");
 
 		node.setAttribute("data-token", room.token);
-		let roomName = parseRoomName(room.displayName || room.name);
 		
 		// Room's image
 		node.querySelector(".roomImage").src = navigator.onLine ? roomImageCache[room.token] || `/image/${room.name}?auth=${getAuth()}` : emptyPixel;
@@ -135,7 +134,6 @@ function renderRooms() {
 		if (room.token === roomToken) {
 			node.classList.add("current");
 			document.querySelector("header .core .title .roomName").innerText = room.displayName || room.name;
-			document.querySelector("header .core .title .roomHashtag").innerText = `#${roomName}`;
 		}
 
 		if (room.unreadMessages > 0) node.classList.add("unread");
@@ -407,10 +405,6 @@ function toBodyText(str, message) {
 	});
 
 	return [div.innerHTML, suffix];
-}
-
-function parseRoomName(str) {
-	return str.replace(/[^a-zA-Z 0-9]/g, "").toLowerCase().trim().replace(/ /g, "-");
 }
 
 async function updateData() {
