@@ -197,6 +197,7 @@ aside {
 }
 .room .text .body {
 	color: var(--textSecondary);
+	word-break: break-all;
 }
 .room:hover, .room.current {
 	background: var(--border);

@@ -124,7 +124,7 @@ function renderRooms() {
 		let lastActor = room.lastMessage.actorId !== atob(getAuth()).split(":")[0] ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
 		node.querySelector(".body .authorName").innerText = lastActor;
 		
-		let lastMessage = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage)[0]; // 200 for no real reason.
+		let lastMessage = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage, "aside")[0]; // 200 for no real reason.
 		if(lastMessage.startsWith("<img")) lastMessage = `${lastActor} sent an image`;
 		
 		node.querySelector(".body .lastMessage").innerHTML = lastMessage;
@@ -207,7 +207,7 @@ function renderChat() {
 			// Instead of doing the name & profile picture again,
 			// add another paragraph.
 			let p = document.createElement("p");
-			let msg = toBodyText(message.content, message);
+			let msg = toBodyText(message.content, message, "core");
 			p.innerHTML = msg[0];
 			p.setAttribute("data-id", message.id);
 			p.setAttribute("data-is-fake", !!message.fake);
@@ -351,7 +351,7 @@ function getMessageNode(message) {
 	return node;
 }
 
-function toBodyText(str, message) {
+function toBodyText(str, message, section) {
 	let suffix = "";
 	// Match & replace URLs
 	let urlRegex = /(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g;
@@ -371,16 +371,21 @@ function toBodyText(str, message) {
 			}
 		} else if(par[key].type === "file" && par[key].mimetype.startsWith("image")) {
 			let link = par[key].link;
-			let newStr = `<img class="embed allowOpen" src="/image-preview/${par[key].id}?auth=${getAuth()}" data-original="${link}"></a>`;
-			while (str.includes(replacingStr)) {
-				str = str.replace(replacingStr, newStr);
+			if(section === "aside") {
+				while (str.includes(replacingStr)) {
+					str = str.replace(replacingStr, link);
+				}
+			} else {
+				let newStr = `<img class="embed allowOpen" src="/image-preview/${par[key].id}?auth=${getAuth()}" data-original="${link}"></a>`;
+				while (str.includes(replacingStr)) {
+					str = str.replace(replacingStr, newStr);
+				}
 			}
 		} else if(par[key].type == "file") {
 			// Replace file params with URLs to file.
 			// URL preview embeds should take care of this one.
 			let link = par[key].link;
 			let newStr = `<strong>File:</strong> <a class="link fileLink" href="${link}" target="_blank">${link}</a>`;
-			console.log(replacingStr);
 			while(str.includes(replacingStr)) {
 				str = str.replace(replacingStr, newStr);
 			}
@@ -392,19 +397,30 @@ function toBodyText(str, message) {
 
 	str = str.replace(/\br\/([a-zA-Z0-9-_]*)/g, `<a class="subreddit" href="https://reddit.com/r/$1/">r/$1</a>`)
 
-	// We need a node for HLJS to highlight,
-	// so that's what we're doing.
-	let div = document.createElement("div");
-	div.innerHTML = str;
-	div.querySelectorAll("pre code").forEach(block => {
-		hljs.highlightBlock(block);
+	if(section === "core") {
+		// We need a node for HLJS to highlight,
+		// so that's what we're doing.
+		let div = document.createElement("div");
+		div.innerHTML = str;
+		div.querySelectorAll("pre code").forEach(block => {
+			hljs.highlightBlock(block);
 
-		let parent = block.parentNode;
-		parent.outerHTML = `<div class="codeWrapper">${parent.outerHTML}</div>`
+			let parent = block.parentNode;
+			parent.outerHTML = `<div class="codeWrapper">${parent.outerHTML}</div>`
 
-	});
+		});
+		str = div.innerHTML;
+	}
 
-	return [div.innerHTML, suffix];
+	if(section === "aside") {
+		if(str.startsWith("```")) {
+			// If it's a code block, get rid of the definition
+			str = str.split("\n").slice(1).join("\n");
+		}
+		str = str.replace(/\n/g, " ");
+	}
+
+	return [str, suffix];
 }
 
 async function updateData() {
