@@ -515,7 +515,73 @@ pre code {
 	word-break: normal;
 }
 
-/* Overlay */
+/* Auth overlay */
+.authOverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.1);
+	z-index: 80;
+	display: none;
+	justify-content: center;
+	align-items: center;
+}
+body[data-signed-in="false"] {
+	overflow-y: hidden;
+}
+body[data-signed-in="false"] .authOverlay {
+	display: flex;
+}
+
+.authWrapper {
+	width: 90%;
+	max-width: 300px;
+	padding: 30px;
+	border: 1px solid var(--border);
+	background: var(--body);
+	border-radius: 6px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	color: var(--textSecondary);
+}
+.authWrapper > .title {
+	margin: 15px 0;
+	color: var(--text);
+}
+.authWrapper > .logo {
+	display: block;
+	border-radius: 4px;
+}
+
+.authWrapper > form {
+	display: grid;
+	grid-template-columns: 100%;
+	grid-gap: 10px;
+}
+.authWrapper > form .inputWrapper input {
+	box-sizing: border-box;
+	padding: 5px;
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	width: 100%;
+	font-size: 1rem;
+	margin-top: 5px;
+	background: transparent;
+	color: inherit;
+}
+.authWrapper > form .btn {
+	padding: 8px 20px;
+	border-radius: 4px;
+	color: white;
+	background: var(--main);
+	border: 0;
+	font-size: 1rem;
+	width: 100px;
+	margin-top: 20px;
+}
+
+/* Image overlays */
 .overlayWrapper {
 	position: fixed;
 	z-index: 50;

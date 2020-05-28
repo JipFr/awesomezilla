@@ -83,17 +83,25 @@ function correctImage(imgElement) {
 			userName: imgElement.closest(".message").querySelector(".name").innerText
 		}
 	}
-	imgElement.src = navigator.onLine ? `/placeholderImage/300/${peopleImgCache[userId].bg}/fff?text=${peopleImgCache[userId].userName.slice(0, 1).toUpperCase()}` : emptyPixel;
+
+	imgElement.src = emptyPixel;
 }
 
 function getAuth() {
 	if (!localStorage.getItem("auth")) {
-		let username = prompt("Your username");
-		let password = prompt("Your password");
-		let b64 = btoa(`${username}:${password}`);
-		localStorage.setItem("auth", b64);
+		// let username = prompt("Your username");
+		// let password = prompt("Your password");
+		// let b64 = btoa(`${username}:${password}`);
+		// localStorage.setItem("auth", b64);
+		return null;
 	}
 	return localStorage.getItem("auth");
+}
+
+/** Get user's ID */
+function getUserId() {
+	// Parse user's ID from "Basic AUTH" string, https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#Basic_authentication_scheme
+	return atob(getAuth()).split(":")[0].split("@")[0];
 }
 
 // Render all rooms in the sidebar
@@ -121,7 +129,7 @@ function renderRooms() {
 		node.querySelector(".channelName").innerText = room.displayName || room.name;
 		
 		// Last message author & content
-		let lastActor = room.lastMessage.actorId !== atob(getAuth()).split(":")[0] ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
+		let lastActor = room.lastMessage.actorId !== getUserId() ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
 		node.querySelector(".body .authorName").innerText = lastActor;
 		
 		let lastMessage = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage, "aside")[0]; // 200 for no real reason.
@@ -594,22 +602,6 @@ async function init() {
 		window.scrollTo(0, 0);
 	});
 
-	// Send message eventlisteners
-	document.querySelector(".inputDiv .send").addEventListener("click", sendMessage);
-	document.querySelector(".messageBox").addEventListener("input", evt => {
-		document.body.style.setProperty("--inputHeight", (evt.currentTarget.scrollHeight + 2) + "px");
-		toBottom();
-		checkCommands(evt.currentTarget);
-	});
-	document.querySelector(".messageBox").addEventListener("keyup", evt => {
-		if (evt.key === "Enter" && !evt.shiftKey) {
-			sendMessage();
-		}
-	});
-
-	// Start!
-	loopMain(true, loopIteration, roomToken); // It's init, so I'm passing true
-
 	// Set view to list if user is on mobile without focus
 	if(!roomToken) {
 		document.body.setAttribute("data-focus", "aside");
@@ -617,6 +609,40 @@ async function init() {
 	} else {
 		document.body.setAttribute("data-focus", "core");
 		toBottom();
+	}
+
+	// This is the most important bit!
+
+
+	if(localStorage.getItem("auth")) {
+		document.body.setAttribute("data-signed-in", true);
+		// Send message eventlisteners
+		document.querySelector(".inputDiv .send").addEventListener("click", sendMessage);
+		document.querySelector(".messageBox").addEventListener("input", evt => {
+			document.body.style.setProperty("--inputHeight", (evt.currentTarget.scrollHeight + 2) + "px");
+			toBottom();
+			checkCommands(evt.currentTarget);
+		});
+		document.querySelector(".messageBox").addEventListener("keyup", evt => {
+			if (evt.key === "Enter" && !evt.shiftKey) {
+				sendMessage();
+			}
+		});
+
+		// Start!
+		loopMain(true, loopIteration, roomToken); // It's init, so I'm passing true
+	} else {
+
+		document.querySelector(".authOverlay .btn.submit").addEventListener("click", evt => {
+			console.log(evt);
+			let username = document.querySelector("input#username").value;
+			let password = document.querySelector("input#password").value;
+			let b64 = btoa(`${username}:${password}`);
+			localStorage.setItem("auth", b64);
+			location.reload();
+		});
+
+		document.body.setAttribute("data-signed-in", false);
 	}
 
 }
@@ -631,7 +657,7 @@ function sendMessage() {
 	data.messages.push({
 		content: v,
 		author: {
-			id: atob(getAuth()).split(":")[0].split("@")[0]
+			id: getUserId()
 		},
 		parameters: {},
 		timestamp: new Date(),
