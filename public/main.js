@@ -89,10 +89,6 @@ function correctImage(imgElement) {
 
 function getAuth() {
 	if (!localStorage.getItem("auth")) {
-		// let username = prompt("Your username");
-		// let password = prompt("Your password");
-		// let b64 = btoa(`${username}:${password}`);
-		// localStorage.setItem("auth", b64);
 		return null;
 	}
 	return localStorage.getItem("auth");
@@ -122,8 +118,15 @@ function renderRooms() {
 
 		node.setAttribute("data-token", room.token);
 		
+		// Is the room NOT REAL?
+		node.setAttribute("data-is-skeleton", !!room.skeleton);
+		
 		// Room's image
-		node.querySelector(".roomImage").src = navigator.onLine ? roomImageCache[room.token] || `/image/${room.name}?auth=${getAuth()}` : emptyPixel;
+		let imgSrc = navigator.onLine ? roomImageCache[room.token] || `/image/${room.name}?auth=${getAuth()}` : emptyPixel;
+		if(room.skeleton) {
+			imgSrc = emptyPixel;
+		}
+		node.querySelector(".roomImage").src = imgSrc;
 		
 		// Channel's name, say "Embed preview" or "Jip BOT"
 		node.querySelector(".channelName").innerText = room.displayName || room.name;
@@ -576,19 +579,33 @@ async function init() {
 	const ipsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed ddolor sit amet, consetetur sadipscing elitr,";
 	for (let i = 0; i < 20; i++) {
 		let index = Math.floor(Math.random() * ipsum.length);
-		let random = Math.floor(Math.random() * 5)
+		let random = Math.floor(Math.random() * 5);
+		let fakeName = "fake.person" + "0".repeat(random);
 		data.messages.push({
 			content: ipsum.slice(index),
 			author: {
-				id: "fake.person" + "0".repeat(random)
+				id: fakeName
 			},
 			parameters: {},
 			timestamp: new Date(0),
 			fake: true,
 			skeleton: true
 		});
+		data.channels.push({
+			displayName: fakeName,
+			name: fakeName,
+			unreadMessages: 0,
+			token: "",
+			lastMessage: {
+				actorId: "j.frijlink",
+				message: ipsum.slice(index),
+				parameters: []
+			},
+			skeleton: true
+		});
 	}
 	renderChat();
+	renderRooms();
 
 	// Listen for sidebar resizing
 	let sidebarObserver = new MutationObserver(storeSidebarWidth);
@@ -634,7 +651,6 @@ async function init() {
 	} else {
 
 		document.querySelector(".authOverlay .btn.submit").addEventListener("click", evt => {
-			console.log(evt);
 			let username = document.querySelector("input#username").value;
 			let password = document.querySelector("input#password").value;
 			let b64 = btoa(`${username}:${password}`);

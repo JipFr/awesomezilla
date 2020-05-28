@@ -421,7 +421,10 @@ aside {
 	max-width: 100%;
 }
 
-/* Skeleton messages */
+/* Skeleton messages (and apparently, channels) */
+[data-is-skeleton="true"] {
+	color: transparent;
+}
 [data-is-skeleton="true"] .body > p[data-is-fake], [data-is-skeleton="true"] .title {
 	background: var(--textSecondary);
 	opacity: 0.1;
@@ -431,6 +434,15 @@ aside {
 }
 [data-is-skeleton="true"] .title > * {
 	opacity: 0;
+}
+/* Channels, specifically */
+[data-is-skeleton="true"] .body {
+	display: block;
+	max-height: 1rem;
+	overflow-y: hidden;
+	background: var(--textSecondary);
+	opacity: 0.1;
+	margin-top: 3px;
 }
 
 /* Embeds */
