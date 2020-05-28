@@ -122,8 +122,13 @@ function renderRooms() {
 		node.querySelector(".channelName").innerText = room.displayName || room.name;
 		
 		// Last message author & content
-		node.querySelector(".body .authorName").innerText = room.lastMessage.actorId !== atob(getAuth()).split(":")[0] ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
-		node.querySelector(".body .lastMessage").innerHTML = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage)[0]; // 200 for no real reason.
+		let lastActor = room.lastMessage.actorId !== atob(getAuth()).split(":")[0] ? (room.lastMessage.actorDisplayName || room.lastMessage.actorId).split(" ")[0] : "Jij";
+		node.querySelector(".body .authorName").innerText = lastActor;
+		
+		let lastMessage = toBodyText(room.lastMessage.message.slice(0, 200), room.lastMessage)[0]; // 200 for no real reason.
+		if(lastMessage.startsWith("<img")) lastMessage = `${lastActor} sent an image`;
+		
+		node.querySelector(".body .lastMessage").innerHTML = lastMessage;
 		node.href = `#${room.token}`;
 
 		// If it's the current one...
