@@ -157,6 +157,7 @@ header .left .options .dropdown {
 	padding: 10px 15px;
 	align-items: center;
 	cursor: pointer;
+	text-align: left;
 }
 .dropdown .item + .item {
 	border-top: 1px solid var(--border);
