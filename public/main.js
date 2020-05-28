@@ -430,7 +430,7 @@ function toBodyText(str, message, section) {
 		str = str.replace(/\n/g, " ");
 	}
 
-	str = str.replace(/\n/g, "<br>");
+	str = str.trim().replace(/\n/g, "<br>");
 
 	return str;
 }
