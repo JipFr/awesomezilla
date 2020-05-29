@@ -169,6 +169,10 @@ header .left .options .dropdown {
 }
 header .left .options svg {
 	display: block;
+	color: var(--headerArrow);
+}
+header .left .options .dropdown svg {
+	color: var(--text);
 }
 details summary::-webkit-details-marker {
 	display:none;
