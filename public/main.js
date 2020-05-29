@@ -249,7 +249,7 @@ function renderChat() {
 
 async function updateEmbeds() {
 	let links = [...document.querySelectorAll(`.message p[data-id][data-is-fake="false"] a`)];
-	let hrefs = links.map(el => el.href).filter(link => typeof urlCache[link] === "undefined");
+	let hrefs = links.filter(el => !el.closest("code")).map(el => el.href).filter(link => typeof urlCache[link] === "undefined");
 	for (let url of hrefs) {
 		// That means loading...
 		urlCache[url] = "";
