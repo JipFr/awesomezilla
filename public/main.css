@@ -40,6 +40,8 @@
 	}
 	code {
 		filter: invert(1);
+	}
+	div pre code {
 		border-left-color: #B0B238;
 	}
 	/* This is inline code */
