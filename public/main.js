@@ -630,8 +630,6 @@ async function init() {
 	}
 
 	// This is the most important bit!
-
-
 	if(localStorage.getItem("auth")) {
 		document.body.setAttribute("data-signed-in", true);
 		// Send message eventlisteners
@@ -657,6 +655,23 @@ async function init() {
 			let b64 = btoa(`${username}:${password}`);
 			localStorage.setItem("auth", b64);
 			location.reload();
+		});
+
+		document.querySelectorAll(".authOverlay input").forEach(input => {
+			input.addEventListener("keyup", evt => {
+				if(evt.key === "Enter") {
+					let wrapper = input.closest(".inputWrapper");
+					let parent = input.closest("form");
+					let i = [...parent.children].indexOf(wrapper);
+					
+					let next = parent.children[i + 1];
+					if(next && next.querySelector("input")) {
+						next.querySelector("input").focus();
+					} else {
+						document.querySelector(".authOverlay .submit").click();
+					}
+				}
+			});
 		});
 
 		document.body.setAttribute("data-signed-in", false);
