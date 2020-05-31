@@ -105,7 +105,7 @@ function renderRooms() {
 	let wrapper = document.querySelector(".rooms");
 
 	// Prevent an empty list ruining everything
-	if(JSON.stringify(lastRoomData) === data.channels || data.channels.length < lastRoomData.length - 1) {
+	if((JSON.stringify(lastRoomData) === data.channels) || data.channels.length < lastRoomData.length - 1) {
 		return;
 	}
 
@@ -160,7 +160,7 @@ function renderRooms() {
 
 		// HR
 		wrapper.appendChild(document.createElement("hr"));
-
+		wrapper.querySelectorAll("hr + hr").forEach(el => el.remove());
 	}
 }
 
@@ -407,21 +407,6 @@ function toBodyText(str, message, section) {
 
 	str = str.replace(/\br\/([a-zA-Z0-9-_]*)/g, `<a class="subreddit" href="https://reddit.com/r/$1/">r/$1</a>`)
 
-	if(section === "core") {
-		// We need a node for HLJS to highlight,
-		// so that's what we're doing.
-		let div = document.createElement("div");
-		div.innerHTML = str;
-		div.querySelectorAll("pre code").forEach(block => {
-			hljs.highlightBlock(block);
-
-			let parent = block.parentNode;
-			parent.outerHTML = `<div class="codeWrapper">${parent.outerHTML}</div>`
-
-		});
-		str = div.innerHTML;
-	}
-
 	if(section === "aside") {
 		if(str.startsWith("```")) {
 			// If it's a code block, get rid of the definition
@@ -431,6 +416,33 @@ function toBodyText(str, message, section) {
 	}
 
 	str = str.trim().replace(/\n/g, "<br>");
+
+	if(section === "core") {
+		// We need a node for HLJS to highlight,
+		// so that's what we're doing.
+		let div = document.createElement("div");
+		div.innerHTML = str;
+		div.querySelectorAll("pre code").forEach(block => {
+			hljs.highlightBlock(block);
+
+			while(block.children[0].nodeName === "BR") {
+				block.children[0].remove();
+			}
+
+			block.innerHTML = block.innerHTML.trim();
+			let parent = block.parentNode;
+			parent.outerHTML = `<div class="codeWrapper">${parent.outerHTML}</div>`
+
+		});
+
+		div.querySelectorAll(".codeWrapper + br + p, br + .codeWrapper").forEach(el => {
+			if(el.previousSibling.nodeName === "BR") {
+				el.previousSibling.remove();;
+			}
+		});
+
+		str = div.innerHTML;
+	}
 
 	return str;
 }
