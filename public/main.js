@@ -105,7 +105,7 @@ function renderRooms() {
 	let wrapper = document.querySelector(".rooms");
 
 	// Prevent an empty list ruining everything
-	if((JSON.stringify(lastRoomData) === data.channels) || data.channels.length < lastRoomData.length - 1) {
+	if((JSON.stringify(lastRoomData) === JSON.stringify(data.channels))) {
 		return;
 	}
 
