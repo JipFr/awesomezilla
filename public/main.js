@@ -97,7 +97,7 @@ function getAuth() {
 /** Get user's ID */
 function getUserId() {
 	// Parse user's ID from "Basic AUTH" string, https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#Basic_authentication_scheme
-	return atob(getAuth()).split(":")[0].split("@")[0];
+	return atob(getAuth()).split(":")[0].split("@")[0].toLowerCase();
 }
 
 // Render all rooms in the sidebar
