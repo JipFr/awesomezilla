@@ -317,7 +317,7 @@ aside {
 }
 .mainChat .inputDiv .inputDivContent {
 	display: grid;
-	grid-template-columns: 1fr auto;
+	grid-template-columns: auto 1fr auto;
 	grid-gap: 10px;
 	align-items: center;
 }
