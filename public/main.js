@@ -632,18 +632,6 @@ async function init() {
 		window.scrollTo(0, 0);
 	});
 
-	// File
-	document.querySelector(".fileInput").addEventListener("change", () => {
-		let file = document.querySelector(".fileInput").files[0];
-		if(file.type.startsWith("image")) {
-			let e = encodeURIComponent;
-			fetch(`/uploadFile?auth=${getAuth()}&fileName=${e(file.name)}&contentType=${e(file.type)}`, {
-				method: "POST",
-				body: file
-			});	
-		}
-	});
-
 	// Set view to list if user is on mobile without focus
 	if(!roomToken) {
 		document.body.setAttribute("data-focus", "aside");

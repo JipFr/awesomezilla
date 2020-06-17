@@ -162,40 +162,5 @@ app.get("/placeholderImage/:resolution/:colorA/:colorB", async (ctx) => {
 	return arr;
 });
 
-// File uploads
-app.post("/uploadFile", async (ctx) => {
-	let file: string = await ctx.body(); // Get file
-	
-	let { fileName, contentType } = ctx.queryParams;
-	console.log(fileName, contentType, ctx.queryParams)
-
-	// Upload file
-	const body = new FormData
-	body.append("image", file);
-
-	let req = await fetch("https://api.imgur.com/3/image", {
-		body,
-		method: "POST",
-		headers: {
-			Authorization: "Client-ID bdcc73a9cbce92e",
-			"Content-Type": "multipart/form-data"
-	}});
-	console.log("_");
-	console.log(req);
-	console.log(await req.text());
-	console.log("_");
-	// let fileReq = await fetch(`https://box.ictmaatwerk.com/remote.php/webdav/uploads/${Date.now()} ${fileName}`, {
-	// 	method: "PUT",
-	// 	headers: {
-	// 		"Ocs-Apirequest": "true",
-	// 		"Accept": "application/json, text/plain, */*",
-	// 		"Authorization": `Basic ${ctx.queryParams.auth}`,
-	// 		"content-type": contentType
-	// 	},
-	// 	body: file
-	// }); 
-	return {};
-})
-
 await app.start({ port: 8081 });
 console.log("Started!");
