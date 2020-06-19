@@ -41,13 +41,27 @@ app.get("/getEmbed", async (ctx: Context) => {
 app.post("/getData", async (ctx: Context) => {
 	let query = await ctx.body() as {[key: string]: string};
 	if(query.auth) {
-		let client = await getClient(query.auth.toString());
+		let auth = query.auth.toString();
+		let client = await getClient(auth);
 
 		let messages: Message[] = [];
 		if(query.room) {
 			let room = client.channels.find((room: Channel) => room.token === query.room);
 			if(room) {
 				messages = await room.fetchMessages();
+				// console.log(room.unreadMessages);
+				// if(room.unreadMessages) {
+				// 	let token = room.token;
+				// 	let x = await fetch(`https://box.ictmaatwerk.com/ocs/v2.php/apps/spreed/api/v1/chat/${token}/read`, {
+				// 		method: "POST",
+				// 		headers: {
+				// 			"Ocs-Apirequest": "true",
+				// 			"Accept": "application/json, text/plain, */*",
+				// 			"Authorization": `Basic ${auth}`
+				// 		}
+				// 	});
+				// 	console.log(x, await x.text());
+				// }
 			}
 		}
 

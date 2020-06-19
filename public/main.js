@@ -415,8 +415,6 @@ function toBodyText(str, message, section) {
 		str = str.replace(/\n/g, " ");
 	}
 
-	str = str.trim().replace(/\n/g, "<br>");
-
 	if(section === "core") {
 		// We need a node for HLJS to highlight,
 		// so that's what we're doing.
