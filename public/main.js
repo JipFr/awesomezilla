@@ -423,7 +423,7 @@ function toBodyText(str, message, section) {
 		div.querySelectorAll("pre code").forEach(block => {
 			hljs.highlightBlock(block);
 
-			while(block.children[0].nodeName === "BR") {
+			while(block && block.children[0] && block.children[0].nodeName === "BR") {
 				block.children[0].remove();
 			}
 
