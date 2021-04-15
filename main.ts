@@ -12,12 +12,9 @@ interface ImageCache {
 }
 let iconCache: ImageCache = {};
 let previewCache: ImageCache = {};
-// let parser = new Parser();
-// let renderer = new HtmlRenderer({ safe: true });
 
 let toHTML = (str: string) => {
 	let html = Marked.parse(str).content;
-	console.log()
 	return html;
 }
 

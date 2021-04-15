@@ -363,14 +363,6 @@ function getMessageNode(message) {
 }
 
 function toBodyText(str, message, section) {
-	// Match & replace URLs
-	let urlRegex = /(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g;
-	let urlMatch = str.match(urlRegex);
-	if (urlMatch) {
-		let index = str.indexOf(urlMatch);
-		if (str[index - 1] !== `"`) str = str.replace(urlRegex, `<a class="link doEmbed" href="$1" target="_blank">$1</a>`);
-	}
-
 	let par = message.parameters || message.messageParameters;
 	for (let key of Object.keys(par)) {
 		let replacingStr = `{${key}}`;
