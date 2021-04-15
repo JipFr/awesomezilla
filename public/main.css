@@ -176,6 +176,9 @@ header .left .options svg {
 header .left .options .dropdown svg {
 	color: var(--text);
 }
+details summary {
+	list-style: none;
+}
 details summary::-webkit-details-marker {
 	display:none;
 }

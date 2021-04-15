@@ -3,7 +3,7 @@
 /** Get HTML embed from URL */
 export async function getEmbed(url: string): Promise<string> {
 
-	url = url.split(":").slice(0, 2).join(":");; // Should help with URLs like https://deno.land/x/talk_lib/mod.ts:98:21)
+	url = url.split(":").slice(0, 2).join(":");; // Should help with URLs like https://raw.githubusercontent.com/JipFr/talk-lib/master/mod.ts:98:21)
 
 	let embedReq = await fetch(url, {
 		headers: {

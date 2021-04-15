@@ -1,4 +1,4 @@
-import { Client } from "https://deno.land/x/talk_lib/mod.ts"
+import { Client } from "https://raw.githubusercontent.com/JipFr/talk-lib/master/mod.ts"
 
 /** User clients interface, store many Client classes */
 export interface UserClients {

@@ -1,22 +1,23 @@
-import { Application, Context } from "https://deno.land/x/abc@v1.0.0-rc8/mod.ts";
+import { Application, Context } from "https://deno.land/x/abc@v1.3.1/mod.ts";
 import { renderFile } from "https://deno.land/x/dejs/mod.ts";
-import { Client, Message, Channel } from "https://deno.land/x/talk_lib/mod.ts"
-import { Parser, HtmlRenderer } from "https://cdn.pika.dev/commonmark@0.29.1"
+import { Client, Message, Channel } from "https://raw.githubusercontent.com/JipFr/talk-lib/master/mod.ts"
+import { Marked } from "https://deno.land/x/markdown@v2.0.0/mod.ts";
 import { UserClients } from "./classes.ts";
 import { getEmbed } from "./embed.ts";
+
 
 interface ImageCache {
 	/** User id with UINT8array */
 	[key: string]: Uint8Array;
 }
-let iconCache: ImageCache= {};
-let previewCache: ImageCache= {};
-let parser = new Parser();
-let renderer = new HtmlRenderer({ safe: true });
+let iconCache: ImageCache = {};
+let previewCache: ImageCache = {};
+// let parser = new Parser();
+// let renderer = new HtmlRenderer({ safe: true });
 
 let toHTML = (str: string) => {
-	let ast = parser.parse(str);
-	let html = renderer.render(ast);
+	let html = Marked.parse(str).content;
+	console.log()
 	return html;
 }
 
@@ -39,7 +40,7 @@ app.get("/getEmbed", async (ctx: Context) => {
 });
 
 app.post("/getData", async (ctx: Context) => {
-	let query = await ctx.body() as {[key: string]: string};
+	let query = await ctx.body as {[key: string]: string};
 	if(query.auth) {
 		let auth = query.auth.toString();
 		let client = await getClient(auth);
@@ -93,7 +94,7 @@ interface PostMessageOptions {
 }
 
 app.post("/postMessage", async (ctx: Context) => {
-	let query = await ctx.body() as PostMessageOptions;
+	let query = await ctx.body as PostMessageOptions;
 	if(query.auth && query.room) {
 		let client = await getClient(query.auth.toString());
 
